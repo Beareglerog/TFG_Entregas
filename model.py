@@ -2,7 +2,7 @@
 import pandas as pd
 import streamlit as st
 import math
-from help import read_table, load_tables, lookup_row, lookup_value
+from help import *
 
 
 DATA_DIR = "data/Lookup_Tables"
