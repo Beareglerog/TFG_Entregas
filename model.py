@@ -211,7 +211,6 @@ def factor_ivacal(tipo, provincia):
 
 def factor_ivaacs(tipo, provincia):
     if tipo == 'electricidad':
-        #Probar con "Las Palmas" 
         if (provincia == 'Palmas, Las') or (provincia == 'Santa Cruz de Tenerife'):
             factor_ivaacs = lookup_value('impuestos', 4, 2)
         elif (provincia == 'Ceuta') or (provincia == 'Melilla'):
@@ -252,7 +251,6 @@ def factor_ivaelectricidad_noconta(provincia):
 
 ## QUE ES TRAMO????????????????
 def potencia_poromision(Npax, tipo_calefaccion, tramo):
-    #estos numeros que son?
     potencia_minima = [2.4, 3.3, 3.8, 4.3, 4.9]
     potencia_maxima = [4.4, 6.0, 6.9, 7.8, 8.9]
     if Npax >= 5:
@@ -425,7 +423,6 @@ def calcula_c1_verano(califE, zona_verano, tipo_vivienda):
         calcula_c1_verano = lookup_value('C1_unifamiliar_verano', row, califE)
     return calcula_c1_verano
 
-# el c1 no me queda claro para que es???????????????????????????????
 def corrige_zona1(zona_verano):
     if zona_verano==1:
         corrige_zona1 = 0
