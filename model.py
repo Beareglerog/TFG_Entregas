@@ -11,7 +11,7 @@ tables = {}
 def zona_climatica(provincia, altitud):
 
     # row = Lookup$Row('zonas';31;provincia$)
-    row = lookup_row('zonas', 31, provincia)
+    row = lookup_row('zonas', 'Provincia', provincia)
 
 # Indice bruto es como interpolar la altitud en las columnas de la tabla
     if altitud < 8000:
@@ -39,7 +39,7 @@ def zonaver(provincia, altitud):
 
 def zona_inv_localidad(provincia, altitud):
 
-    row = lookup_row('zonas', 31, provincia)
+    row = lookup_row('zonas', 'Provincia', provincia)
 
     if altitud < 8000:
         indice_bruto = 1 + (altitud - 50) * 25 / 1250
@@ -59,7 +59,7 @@ def zona_inv_localidad(provincia, altitud):
 def demanda_referenciacalefaccion(provincia, altitud, tipo_vivienda):
     zonainvlocalidad = zona_inv_localidad(provincia, altitud)
     # para zona inv localidad, que tipo de referencias son a3c, a2c, b2c, c2c ?????????????????????
-    row = lookup_row('sci_referencia', 1, zonainvlocalidad)
+    row = lookup_row('sci_referencia', 0, zonainvlocalidad)
     # no entiendo que es el sci
     SCI = lookup_value('sci_referencia', row, 2)
     # calcula el sci pero no se usa para nada ???????????????????????????????
@@ -74,7 +74,7 @@ def demanda_referenciacalefaccion(provincia, altitud, tipo_vivienda):
 # que es scv ???????????????????????????????????????
 def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
     zonaverlocalidad = zona_inv_localidad(provincia, altitud)
-    row = lookup_row('scv_referencia', 1, zonaverlocalidad)
+    row = lookup_row('scv_referencia', 0, zonaverlocalidad)
     SCV = lookup_value('scv_referencia', row, 2)
     # calcula el scv pero no se usa para nada ???????????????????????????????
     # Por que nuevo ?????????????????????????????? si no se ha comprobado nada de fechas ???????????????
@@ -390,7 +390,8 @@ def fdemanda_corregidacal(demanda_CorregidaSigno):
 
 def io_is(zona_invierno, tipo_vivienda, C1):
     row = lookup_row('Dispersion R', 'Zona', zona_invierno)
-    R = lookup_value('Dispersion R', row, tipo_vivienda)
+    R = float(str(lookup_value('Dispersion R', row, tipo_vivienda)).replace(",", "."))
+    C1 = float(str(C1).replace(",", "."))
     io_is = (1 + (C1 - 0.6) * 2 * (R - 1)) / R
     return io_is
 
@@ -439,7 +440,7 @@ def factor_electricidadacs(tipo_ACS):
         
     return factor_electricidadacs
 
-def factor_electricidad(tipo_calefaccion):
+def factor_electricidadcal(tipo_calefaccion):
     if tipo_calefaccion in ('electricidad(radiadores)', 'electricidad(acumuladores)', 'bomba de calor'):
         factor_electricidadcal = 1
     else:
@@ -518,10 +519,11 @@ def gei(provincia, Npax, superficie):
 #Funcion para determinar si aplicacamos el consumo con o sin penetracion y si hay dicho aparato
 def consumo_aparato(aparato, nombre_aparato, miembros):
     match aparato:
-        case 'Si':
+        case 'True':
             consumo_aparato = gesin(nombre_aparato, miembros)
-        case 'No':
+        case 'False':
             consumo_aparato = 0
+        #### dudoso
         case 'NS/NC':
             consumo_aparato = gecon(nombre_aparato, miembros)
         case _:
@@ -651,12 +653,6 @@ def factores(ocupado, parado, estudiante, jubilado, incapacitado, viudo, ama, ot
     factores = factor(ocupado, 'Ocupado', Col) +factor(parado,'Parado', Col) + factor(estudiante, 'Estudiante', Col) + factor(jubilado, 'Jubilado', Col) + factor(incapacitado, 'Incapacitado', Col) + factor(viudo, 'Viudo', Col) + factor(ama, 'Ama', Col) + factor(otro, 'Otro', Col) 
     return factores
  
- 
-#**********************************************************************************************
-#                                   PROGRAMA PRINCIPAL 
-# *********************************************************************************************
-
-
 
 
 
