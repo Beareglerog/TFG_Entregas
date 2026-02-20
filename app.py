@@ -25,21 +25,6 @@ TIPOS_INSTALACION_ACS = ["Individual", "Central"]
 TIPOS_INSTALACION_CAL = ["Individual", "Central", "Aparatos"]
 
 
-# ============================================================
-# OUTPUTS (HARDCODEADOS)
-# ============================================================
-demanda_CorregidaCal = 11019.0
-demanda_CorregidaRef = 0.0
-demanda_ACS = 930.38
-energia_electrica = 151.16
-gasto_CAL = 962.72
-gasto_ACS = 100.0
-gasto_REFRIGERACION = 200.0
-gasto_COMBUSTIBLE = 34.0
-consumo_calefaccion = 151.16
-consumo_ACS = 134.6
-consumo_refrigeracion = 111.03
-energia_electrica = 344.5
 
 
 # ============================================================
@@ -294,7 +279,7 @@ def main():
             panel_open("DATOS GENERALES Y DEFINICIÓN DE EDIFICIO", "tag-blue")
 
             st.selectbox("Provincia", PROVINCIAS, key="prov")
-            st.number_input("Localidad (altitud) (m)", min_value=0, value=650, step=50, key="alt")
+            st.number_input("Localidad (altitud) (m)", min_value=0, value=8000, step=50, key="alt")
             st.selectbox("Antigüedad/calificación energética", ANOS_CONSTRUCCION_CALIFE, key="ano")
             st.selectbox("Tipo de vivienda", TIPOS_VIVIENDA, key="tipo_viv")
 
@@ -411,7 +396,14 @@ def main():
         'e_tab': st.session_state.e_tab,
         }
 
+        print("Imprimiendo inputs recogidos:")
+        for key, value in inputs.items():
+            print(f"{key}: {value}")
+
         resultados = run_demo(inputs)
+        print("imprimiendo resultados calculados:")
+        for key, value in resultados.items():
+            print(f"{key}: {value}")
 
         # MOSTRAR RESULTADOS
         st.header("Resultados Anuales de Demanda y Gasto")

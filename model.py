@@ -24,6 +24,7 @@ def zona_climatica(provincia, altitud):
 
 # Indice + 3 porque las primeras 3 columnas no son localizaciones (titulo, espacio, provincia)
         zona = lookup_value('zonas', row, indice + 3)
+        print(f"Provincia: {provincia}, Altitud: {altitud}, Índice bruto: {indice_bruto}, Índice: {indice}, Zona climática: {zona}")
     else:
         zona = lookup_value('zonas', row, 3)
 
@@ -34,7 +35,7 @@ def zonainv(provincia, altitud):
     return zona_climatica(provincia, altitud)[0]  # letra
 
 def zonaver(provincia, altitud):
-    # zonaver$ = Copy$(zona$;2;1)
+
     return zona_climatica(provincia, altitud)[1]  # número
 
 def zona_inv_localidad(provincia, altitud):
@@ -70,6 +71,7 @@ def demanda_referenciacalefaccion(provincia, altitud, tipo_vivienda):
         demanda_referenciacalefaccion = lookup_value('sci_referencia', row, 'DR nueva vivienda')
     
     return demanda_referenciacalefaccion
+    #float(str(C1).replace(",", "."))
 
 # que es scv ???????????????????????????????????????
 def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
@@ -89,8 +91,7 @@ def elevacion(altitud, fila_capital):
     if altitud >= 8000:
         elevacion = 0
     else:
-        # no estoy segura si empieza en 0 o en 1. si empieza en 1, hay que restar 1 a columna
-        elevacion = altitud - lookup_value('Temp red ACS', fila_capital, 2)
+        elevacion = altitud - lookup_value('Temp red ACS', fila_capital, 2)  # columna B = altitud capital
     return elevacion
 
 def referencia(tipo_vivienda):
