@@ -520,16 +520,15 @@ def gei(provincia, Npax, superficie):
 #Funcion para determinar si aplicacamos el consumo con o sin penetracion y si hay dicho aparato
 def consumo_aparato(aparato, nombre_aparato, miembros):
     match aparato:
-        case 'True':
+        case True:                          # booleano, no string
             consumo_aparato = gesin(nombre_aparato, miembros)
-        case 'False':
+        case False:                         # booleano, no string
             consumo_aparato = 0
-        #### dudoso
         case 'NS/NC':
             consumo_aparato = gecon(nombre_aparato, miembros)
         case _:
-             raise ValueError(f"Valor de aparato no válido: {aparato}")
-    
+            raise ValueError(f"Valor de aparato no válido: {aparato}")
+            
     return consumo_aparato
 
 #Consumo electrico total de todos los electrodomésticos

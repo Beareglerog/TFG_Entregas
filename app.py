@@ -175,6 +175,7 @@ st.markdown(
     .tag-orange { background: rgba(253,126,20,0.12); color: #7a3d05; }
     .tag-purple { background: rgba(111,66,193,0.10); color: #3f1e7a; }
     .tag-indigo { background: #e0f7fa; color: #006064;}
+    .tag-pink { background: rgba(233,30,99,0.10); color: #c912ab; }
 
 
     /* ---------------------------
@@ -328,13 +329,10 @@ def main():
                 st.selectbox("Tipo instalación ACS", TIPOS_INSTALACION_ACS, key="inst_acs")
         panel_close()
 
-    # ---------------------------------------------------------
-    # INSTALACIONES ELÉCTRICAS
-    # ---------------------------------------------------------
-    with tab_elec:
-        panel_open("INSTALACIONES ELÉCTRICAS", "tag-indigo")
+   
+        panel_open("INSTALACIONES ELÉCTRICAS", "tag-pink")
 
-        e1, e2, e3 = st.columns(3)
+        e1, e2, e3 = st.columns([1.2, 0.05, 1.2])
 
         with e1:
             st.checkbox("Cocina", key="e_cocina")
@@ -353,6 +351,28 @@ def main():
             st.checkbox("Ordenador", key="e_pc")
             st.checkbox("Móvil", key="e_mov")
             st.checkbox("Tablet", key="e_tab")
+
+        panel_close()
+
+    # ---------------------------------------------------------
+    # OCUPACIONES
+    # ---------------------------------------------------------
+    with tab_elec:
+        panel_open("OCUPACIONES", "tag-indigo")
+
+        e1, e2, e3 = st.columns([1.2, 0.05, 1.2])
+
+        with e1:
+            st.number_input("Ocupados", min_value=0, value=0, key="ocupados")
+            st.number_input("Parados", min_value=0, value=0, key="parados")
+            st.number_input("Estudiantes", min_value=0, value=0, key="estudiantes")
+            st.number_input("Jubilados", min_value=0, value=0, key="jubilados")
+
+        with e3:
+           st.number_input("Incapacitados", min_value=0, value=0, key="incapacitados")
+           st.number_input("Viudos", min_value=0, value=0, key="viudos")
+           st.number_input("Amas de Casa", min_value=0, value=0, key="amas_casa")
+           st.number_input("Otros", min_value=0, value=0, key="otros")
 
         panel_close()
 
