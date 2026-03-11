@@ -30,6 +30,8 @@ def load_all_tables():
     tables['pesos tarifa electrica'] = pd.read_excel(f'{DATA_DIR}/pesos tarifa electrica.xlsx')
     tables['pesos tarifa electrica verano'] = pd.read_excel(f'{DATA_DIR}/pesos tarifa electrica verano.xlsx')
     tables['alquiler equipos'] = pd.read_excel(f'{DATA_DIR}/alquiler equipos.xlsx')
+    tables['Sur'] = pd.read_excel(f'{DATA_DIR}/Sur.xlsx')
+
     
     # Limpiar columnas de todas las tablas
     #for name, df in tables.items():

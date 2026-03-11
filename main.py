@@ -38,6 +38,15 @@ def run_demo(inputs):
     movil = inputs['e_mov']
     tablet = inputs['e_tab']
 
+    #Ocupaciones
+    n_ocupados = inputs['ocupados']
+    n_parados = inputs['parados']
+    n_estudiantes = inputs['estudiantes']
+    n_jubilados = inputs['jubilados']
+    n_incapacitados = inputs['incapacitados']
+    n_viudos = inputs['viudos']
+    n_amas = inputs['amas_casa']
+    n_otros = inputs['otros']
      # ACS
 
     # NO ENTIENDO PQ SE HACE ESTO????????????????????????
@@ -52,8 +61,6 @@ def run_demo(inputs):
     print(fila_capital)
 
     elevacion_var = elevacion(altitud, fila_capital + 1) #fila capital +1 porque lookup_value hace fila-1
-    print("imprimiendo elevacion")
-    print(elevacion_var)
 
     # Temperatura agua red
     temperatura_AguaRed = np.zeros(13)
@@ -104,8 +111,11 @@ def run_demo(inputs):
     pot_contratada_conREF = pot_contratada_punta_conREF
 
     miembros = miembro(Npax) 
-    energia_electrica = 1.07*(consumo_electrico(cocina, horno, lavadora, secadora, frigorifico, congelador, tv, ordenador, lavavajillas, movil, tablet, microondas, miembros, superficie, Npax, provincia) + factores(ocupado, parado, estudiante, jubilado, incapacitado, viudo, ama, otro, miembros)) 
-
+    energia_electrica = 1.07*(consumo_electrico(cocina, horno, lavadora, secadora, frigorifico, congelador, tv, ordenador, lavavajillas, movil, tablet, microondas, miembros, superficie, Npax, provincia) + factores(n_ocupados, n_parados, n_estudiantes, n_jubilados, n_incapacitados, n_viudos, n_amas, n_otros, miembros))
+    print("imprimiendo tipos")
+    print(type(pot_contratada_punta_sinREF))
+    print(type(pot_contratada_valle_sinREF))
+    print(type(pot_contratada_sinREF))
     coste_fijoELECTRICIDAD_sinREF = tarifa_electrica('fijo', pot_contratada_punta_sinREF, pot_contratada_valle_sinREF)*pot_contratada_sinREF 
     coste_fijoELECTRICIDAD_conREF = tarifa_electrica('fijo', pot_contratada_punta_conREF, pot_contratada_valle_conREF)*pot_contratada_conREF 
     coste_variableELECTRICIDAD = tarifa_electrica('variable', pot_contratada_punta_sinREF, pot_contratada_valle_sinREF) 

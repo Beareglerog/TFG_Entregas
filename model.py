@@ -326,33 +326,34 @@ def tarifa_suministro(inst_termica, tipo_instalacion, consumo_gn, termino,
             + variable_valle * peso_valle)
 
 def tarifa_suministroref(zona_verano): 
-    variable_punta = lookup_value('pvpc', 1, 'variable') 
-    variable_valle = lookup_value('pvpc', 2, 'variable') 
-    variable_llano = lookup_value('pvpc', 3, 'variable') 
+    variable_punta = float(str(lookup_value('pvpc', 2, 'variable')).replace(",", ".")) 
+    variable_valle = float(str(lookup_value('pvpc', 3, 'variable')).replace(",", ".")) 
+    variable_llano = float(str(lookup_value('pvpc', 4, 'variable')).replace(",", ".")) 
     if zona_verano == '1': 
         tarifa_suministroref = 0 
     else: 
         fila_pesos = lookup_row('pesos tarifa electrica verano', 1, zona_verano) 
-        peso_punta = lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_punta') 
-        peso_valle = lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_valle') 
-        peso_llano = lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_llano') 
+        peso_punta = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_punta')).replace(",", "."))
+        peso_valle = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_valle')).replace(",", ".")) 
+        peso_llano = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_llano')).replace(",", ".")) 
         tarifa_suministroref = variable_punta*peso_punta + variable_llano*peso_llano + variable_valle*peso_valle 
     return tarifa_suministroref
 
 def tarifa_electrica(termino, potencia_punta, potencia_valle): 
     if termino == 'fijo': 
-        fijo_punta = lookup_value('pvpc', 1, 'fijo') 
-        fijo_valle = lookup_value('pvpc', 2, 'fijo') 
+        fijo_punta = float(str(lookup_value('pvpc', 2, 'fijo')))
+        fijo_valle = float(str(lookup_value('pvpc', 3, 'fijo')).replace(",", ".")) 
         tarifa_electrica = (fijo_punta*potencia_punta + fijo_valle*potencia_valle)/potencia_punta 
     else: 
-        variable_punta = lookup_value('pvpc', 1, 'variable') 
-        variable_valle = lookup_value('pvpc', 2, 'variable') 
-        variable_llano = lookup_value('pvpc', 3, 'variable') 
-        fila_pesos = lookup_row('pesos tarifa electrica', 1, 'usos domesticos')
-        peso_punta = lookup_value('pesos tarifa electrica', fila_pesos, 'peso_punta')
-        peso_valle = lookup_value('pesos tarifa electrica', fila_pesos, 'peso_valle')
-        peso_llano = lookup_value('pesos tarifa electrica', fila_pesos, 'peso_llano')
+        variable_punta = float(str(lookup_value('pvpc', 2, 'variable')).replace(",", ".")) 
+        variable_valle = float(str(lookup_value('pvpc', 3, 'variable')).replace(",", ".")) 
+        variable_llano = float(str(lookup_value('pvpc', 4, 'variable')).replace(",", ".")) 
+        fila_pesos = lookup_row('pesos tarifa electrica', 0, 'usos domesticos')
+        peso_punta = float(str(lookup_value('pesos tarifa electrica', fila_pesos, 'peso_punta')).replace(",", ".")) 
+        peso_valle = float(str(lookup_value('pesos tarifa electrica', fila_pesos, 'peso_valle')).replace(",", ".")) 
+        peso_llano = float(str(lookup_value('pesos tarifa electrica', fila_pesos, 'peso_llano')).replace(",", ".")) 
         tarifa_electrica = variable_punta*peso_punta + variable_llano*peso_llano + variable_valle*peso_valle 
+      
     return tarifa_electrica
 
 def consumo_gas(tipo_calefaccion, tipo_acs, consumo_calefaccion, consumo_acs, inst_calefaccion, inst_ACS, llamada): 
@@ -487,22 +488,23 @@ def columna(Npax):
 #Funcion para calculo de gasto electrico de cada aparato
 def gesin(nombre_aparato, miembros):
     Col = columna(miembros)
-    if nombre_aparato in('Lavavajillas','Secadora','Congelador', 'Ordenador'):
-        gesin= lookup_value('CMECon', lookup_row('CMECon', 1, nombre_aparato),Col)/(lookup_value('Penetracion', lookup_row('Penetracion',1,nombre_aparato),2))
+    if nombre_aparato in ('Lavavajillas', 'Secadora', 'Congelador', 'Ordenador'):
+        gesin = float(str(lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col)).replace(",", ".")) / float(str(lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)).replace(",", "."))
     else:
-        gesin=lookup_value('CMESin',lookup_row('CMESin',1,nombre_aparato),Col)
+        gesin = float(str(lookup_value('CMESin', lookup_row('CMESin', 0, nombre_aparato), Col)).replace(",", "."))
     return gesin
- 
+
 def gecon(nombre_aparato, miembros):
-    Col=columna(miembros)
-    if nombre_aparato=='Tablet':
-        gecon= lookup_value('CMESin',lookup_row('CMESin', 1,nombre_aparato),Col)*lookup_value('Penetracion', lookup_row('Penetracion',1,nombre_aparato),2)
+    Col = columna(miembros)
+    if nombre_aparato == 'Tablet':
+        #Lo que lee del df es un string -> hay que convertirlo a numero
+        gecon = float(str(lookup_value('CMESin', lookup_row('CMESin', 0, nombre_aparato), Col)).replace(",", ".")) * float(str(lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)).replace(",", "."))
     else:
-        gecon=lookup_value('CMECon',lookup_row('CMECon',1,nombre_aparato),Col)
+        gecon = float(str(lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col)).replace(",", "."))
     return gecon
 
 def gei(provincia, Npax, superficie):
-    zona_ilu = lookup_value('zonas', lookup_row('zonas', 31, provincia), 32)
+    zona_ilu = lookup_value('zonas', lookup_row('zonas', 'Provincia', provincia), 'zona_ilu')
     if Npax<5:
         miembros = Npax
     else:
@@ -513,13 +515,13 @@ def gei(provincia, Npax, superficie):
         catalogar_sup = 3
     else:
         catalogar_sup = 4
-    gei = lookup_value(zona_ilu,miembros,catalogar_sup)
+    gei = float(str(lookup_value(zona_ilu,miembros,catalogar_sup)).replace(",", "."))
     
     return gei
 
 #Funcion para determinar si aplicacamos el consumo con o sin penetracion y si hay dicho aparato
 def consumo_aparato(aparato, nombre_aparato, miembros):
-    match aparato:
+    match aparato :
         case True:                          # booleano, no string
             consumo_aparato = gesin(nombre_aparato, miembros)
         case False:                         # booleano, no string

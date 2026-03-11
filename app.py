@@ -332,7 +332,7 @@ def main():
    
         panel_open("INSTALACIONES ELÉCTRICAS", "tag-pink")
 
-        e1, e2, e3 = st.columns([1.2, 0.05, 1.2])
+        e1, e2, e3, e4, e5 = st.columns([1.1, 0.9, 1.1, 0.9, 1.1])
 
         with e1:
             st.checkbox("Cocina", key="e_cocina")
@@ -340,13 +340,13 @@ def main():
             st.checkbox("Microondas", key="e_micro")
             st.checkbox("Lavavajillas", key="e_lavavaj")
 
-        with e2:
+        with e3:
             st.checkbox("Frigorífico", key="e_frigo")
             st.checkbox("Congelador", key="e_cong")
             st.checkbox("Lavadora", key="e_lav")
             st.checkbox("Secadora", key="e_sec")
 
-        with e3:
+        with e5:
             st.checkbox("Televisión", key="e_tv")
             st.checkbox("Ordenador", key="e_pc")
             st.checkbox("Móvil", key="e_mov")
@@ -360,7 +360,7 @@ def main():
     with tab_elec:
         panel_open("OCUPACIONES", "tag-indigo")
 
-        e1, e2, e3 = st.columns([1.2, 0.05, 1.2])
+        e1, e2, e3 = st.columns([1, 0.2, 1])
 
         with e1:
             st.number_input("Ocupados", min_value=0, value=0, key="ocupados")
@@ -395,13 +395,13 @@ def main():
         'superficie': st.session_state.dim,
         'area_climatizada': st.session_state.area_clim,
         
-        # De tab_activa
+        # De tab_activa ###########cambiar
         'sistema_calefaccion': st.session_state.sistema_cal,
         'inst_calefaccion': st.session_state.inst_cal,
         'sistema_acs': st.session_state.sistema_acs,
         'inst_acs': st.session_state.inst_acs,
         
-        # De tab_elec
+        # De tab_elec ############cambiar
         'e_cocina': st.session_state.e_cocina,
         'e_horno': st.session_state.e_horno,
         'e_micro': st.session_state.e_micro,
@@ -414,11 +414,24 @@ def main():
         'e_pc': st.session_state.e_pc,
         'e_mov': st.session_state.e_mov,
         'e_tab': st.session_state.e_tab,
+
+        # de tab_ocupaciones
+        'ocupados': st.session_state.ocupados,
+        'parados': st.session_state.parados,
+        'estudiantes': st.session_state.estudiantes,
+        'jubilados': st.session_state.jubilados,
+        'incapacitados': st.session_state.incapacitados,
+        'viudos': st.session_state.viudos,
+        'amas_casa': st.session_state.amas_casa,
+        'otros': st.session_state.otros
+
         }
 
-        print("Imprimiendo inputs recogidos:")
-        for key, value in inputs.items():
-            print(f"{key}: {value}")
+        
+
+        #print("Imprimiendo inputs recogidos:")
+        #for key, value in inputs.items():
+            #print(f"{key}: {value}")
 
         resultados = run_demo(inputs)
         print("imprimiendo resultados calculados:")
