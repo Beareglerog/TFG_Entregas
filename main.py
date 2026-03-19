@@ -10,6 +10,7 @@ def run_demo(inputs):
 
     #Cargo tablas:
     load_all_tables()
+    print(tables['C1_bloque_verano']['zona'].tolist())
 
     # Extraigo inputs 
     provincia = inputs['provincia']
@@ -88,8 +89,17 @@ def run_demo(inputs):
   ##  gasto_ACS = (coste_fijoACSreparto*12 + coste_variableACS*consumo_ACS + alquiler_equiposACS*12 + impuesto_gasACS*consumo_ACS + impuesto_electricidadACS*coste_variableACS*consumo_ACS)*(1+factor_ivaacs(tipo_acs, provincia)/100) 
   #  gasto_ACSsinimp = coste_fijoACSreparto*12 + coste_variableACS*consumo_ACS 
 
+      # REFRIGERACIÓN
+    zona_verano = zonaver(provincia, altitud) 
+    C1_verano = calcula_c1_verano(califE, zona_verano, tipo_vivienda) 
+    Io_Is_verano = io_is_verano(zona_verano,tipo_vivienda, C1_verano) 
+    demanda_RefRef = demanda_referenciarefrig(provincia, altitud, tipo_vivienda) 
+    demanda_CorregidaSignoRef = Io_Is_verano * demanda_RefRef * superficie * ratio_supverano/100 
+    demanda_CorregidaRef = fdemanda_corregidacal(demanda_CorregidaSignoRef) 
+    SEER = seer(zona_verano, califE) 
+    consumo_refrigeracion = demanda_CorregidaRef / SEER 
+
     #ELECTRICIDAD
-     # ELECTRICIDAD
 
     pot_contratada_punta_sinREF = potencia_poromision(Npax, tipo_calefaccion, 'punta') 
     pot_contratada_valle_sinREF = potencia_poromision(Npax, tipo_calefaccion, 'valle') 
@@ -112,10 +122,7 @@ def run_demo(inputs):
 
     miembros = miembro(Npax) 
     energia_electrica = 1.07*(consumo_electrico(cocina, horno, lavadora, secadora, frigorifico, congelador, tv, ordenador, lavavajillas, movil, tablet, microondas, miembros, superficie, Npax, provincia) + factores(n_ocupados, n_parados, n_estudiantes, n_jubilados, n_incapacitados, n_viudos, n_amas, n_otros, miembros))
-    print("imprimiendo tipos")
-    print(type(pot_contratada_punta_sinREF))
-    print(type(pot_contratada_valle_sinREF))
-    print(type(pot_contratada_sinREF))
+
     coste_fijoELECTRICIDAD_sinREF = tarifa_electrica('fijo', pot_contratada_punta_sinREF, pot_contratada_valle_sinREF)*pot_contratada_sinREF 
     coste_fijoELECTRICIDAD_conREF = tarifa_electrica('fijo', pot_contratada_punta_conREF, pot_contratada_valle_conREF)*pot_contratada_conREF 
     coste_variableELECTRICIDAD = tarifa_electrica('variable', pot_contratada_punta_sinREF, pot_contratada_valle_sinREF) 
@@ -166,15 +173,7 @@ def run_demo(inputs):
     gasto_ACS = (coste_fijoACSreparto*12 + coste_variableACS*consumo_ACS + alquiler_equiposACS*12 + impuesto_gasACS*consumo_ACS + impuesto_electricidadACS*coste_variableACS*consumo_ACS)*(1+factor_ivaacs(tipo_acs, provincia)/100) 
     gasto_ACSsinimp = coste_fijoACSreparto*12 + coste_variableACS*consumo_ACS 
 
-    # REFRIGERACIÓN
-    zona_verano = zonaver(provincia, altitud) 
-    C1_verano = calcula_c1_verano(califE, zona_verano, tipo_vivienda) 
-    Io_Is_verano = io_is_verano(zona_verano,tipo_vivienda, C1_verano) 
-    demanda_RefRef = demanda_referenciarefrig(provincia, altitud, tipo_vivienda) 
-    demanda_CorregidaSignoRef = Io_Is_verano * demanda_RefRef * superficie * ratio_supverano/100 
-    demanda_CorregidaRef = fdemanda_corregidacal(demanda_CorregidaSignoRef) 
-    SEER = seer(zona_verano, califE) 
-    consumo_refrigeracion = demanda_CorregidaRef / SEER 
+
 
    
 

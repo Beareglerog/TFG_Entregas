@@ -264,23 +264,38 @@ def main():
     st.markdown("---")
 
     # PESTAÑAS AGRUPADAS
-    tab_ppal, tab_activa, tab_elec = st.tabs([
-        "Pág. ppal",
-        "Parte activa",
-        "Instalaciones eléctricas",
+    tab_general, tab_edificio, tab_term, tab_elec, tab_ocup = st.tabs([
+        "Datos Generales",
+        "Edificio",
+        "Instalaciones Térmicas",
+        "Instalaciones Eléctricas",
+        "Ocupación"
     ])
 
     # ---------------------------------------------------------
-    # PÁG. PPAL: (Datos generales) + (Horarios y Dimension)
+    # PÁG. PPAL: (Datos generales)
     # ---------------------------------------------------------
-    with tab_ppal:
+    with tab_general:
+
+        panel_open("DATOS GENERALES", "tag-blue")
+        
+        c1, c_space, c2 = st.columns([1.2, 0.05, 1.2])
+        with c1:
+            st.selectbox("Provincia", PROVINCIAS, key="prov")
+        with c2:
+            st.number_input("Localidad (altitud) (m)", min_value=0, value=8000, step=50, key="alt")
+        
+
+        panel_close()
+
+    # ---------------------------------------------------------
+    # EDIFICIO
+    # ---------------------------------------------------------
+    with tab_edificio:
         c1, c_space, c2 = st.columns([1.2, 0.05, 1.2])
 
         with c1:
-            panel_open("DATOS GENERALES Y DEFINICIÓN DE EDIFICIO", "tag-blue")
-
-            st.selectbox("Provincia", PROVINCIAS, key="prov")
-            st.number_input("Localidad (altitud) (m)", min_value=0, value=8000, step=50, key="alt")
+            panel_open("DEFINICIÓN DE EDIFICIO", "tag-blue")
             st.selectbox("Antigüedad/calificación energética", ANOS_CONSTRUCCION_CALIFE, key="ano")
             st.selectbox("Tipo de vivienda", TIPOS_VIVIENDA, key="tipo_viv")
 
@@ -293,11 +308,11 @@ def main():
 
         panel_close()
 
-    # ---------------------------------------------------------
-    # PARTE ACTIVA: ACS + calefacción + refrigeración
-    # ---------------------------------------------------------
-    with tab_activa:
 
+    # ---------------------------------------------------------
+    # Instalaciones térmicas: calefacción + ACS
+    # ---------------------------------------------------------
+    with tab_term:
         st.markdown(
             """
             <div class="section-badge" style="margin-bottom: 20px;">
@@ -329,35 +344,39 @@ def main():
                 st.selectbox("Tipo instalación ACS", TIPOS_INSTALACION_ACS, key="inst_acs")
         panel_close()
 
-   
+    
+    # ---------------------------------------------------------
+    # Instalaciones eléctricas
+    # ---------------------------------------------------------
+    with tab_elec:
         panel_open("INSTALACIONES ELÉCTRICAS", "tag-pink")
 
         e1, e2, e3, e4, e5 = st.columns([1.1, 0.9, 1.1, 0.9, 1.1])
 
         with e1:
-            st.checkbox("Cocina", key="e_cocina")
-            st.checkbox("Horno", key="e_horno")
-            st.checkbox("Microondas", key="e_micro")
-            st.checkbox("Lavavajillas", key="e_lavavaj")
+                st.checkbox("Cocina", key="e_cocina")
+                st.checkbox("Horno", key="e_horno")
+                st.checkbox("Microondas", key="e_micro")
+                st.checkbox("Lavavajillas", key="e_lavavaj")
 
         with e3:
-            st.checkbox("Frigorífico", key="e_frigo")
-            st.checkbox("Congelador", key="e_cong")
-            st.checkbox("Lavadora", key="e_lav")
-            st.checkbox("Secadora", key="e_sec")
+                st.checkbox("Frigorífico", key="e_frigo")
+                st.checkbox("Congelador", key="e_cong")
+                st.checkbox("Lavadora", key="e_lav")
+                st.checkbox("Secadora", key="e_sec")
 
         with e5:
-            st.checkbox("Televisión", key="e_tv")
-            st.checkbox("Ordenador", key="e_pc")
-            st.checkbox("Móvil", key="e_mov")
-            st.checkbox("Tablet", key="e_tab")
+                st.checkbox("Televisión", key="e_tv")
+                st.checkbox("Ordenador", key="e_pc")
+                st.checkbox("Móvil", key="e_mov")
+                st.checkbox("Tablet", key="e_tab")
 
         panel_close()
 
     # ---------------------------------------------------------
     # OCUPACIONES
     # ---------------------------------------------------------
-    with tab_elec:
+    with tab_ocup:
         panel_open("OCUPACIONES", "tag-indigo")
 
         e1, e2, e3 = st.columns([1, 0.2, 1])

@@ -4,6 +4,7 @@ import streamlit as st
 import math
 from help import *
 
+#################### la tabla sur no se usa
 
 DATA_DIR = "data/Lookup_Tables"
 tables = {}
@@ -163,9 +164,9 @@ def impuesto_gas(suministro):
 
 def impuesto_electricidad(tipo):
     if (tipo == 'electricidad (radiadores)') or (tipo == 'electricidad (acumuladores)') or (tipo == 'bomba de calor'):
-        impuesto_electricidad = lookup_value('impuestos', 2, 'impuesto') / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
+        impuesto_electricidad = float(str(lookup_value('impuestos', 2, 'impuesto')).replace(",", ".")) / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
     elif tipo == 'electricidad':
-        impuesto_electricidad = lookup_value('impuestos', 2, 'impuesto') / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
+        impuesto_electricidad = float(str(lookup_value('impuestos', 2, 'impuesto')).replace(",", ".")) / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
     else:
         impuesto_electricidad = 0
     return impuesto_electricidad
@@ -230,25 +231,22 @@ def factor_ivaacs(tipo, provincia):
     return factor_ivaacs
 
 def factor_ivaelectricidad_conta(provincia):
-    fila_IVAelectricidad = lookup_value('impuestos', 'tipo', 'IVA')
+    fila_IVAelectricidad = lookup_row('impuestos', 'tipo', 'IVA')
     if (provincia == 'Palmas, Las') or (provincia == 'Santa Cruz de Tenerife'):
-        factor_ivaelectricidad_conta = lookup_value('impuestos', 4, 2)
+        return lookup_value('impuestos', 4, 2)
     elif (provincia == 'Ceuta') or (provincia == 'Melilla'):
-        factor_ivaelectricidad_conta = lookup_value('impuestos', 6, 2)
+        return lookup_value('impuestos', 6, 2)
     else:
-        factor_ivaelectricidad_conta = lookup_value('impuestos', fila_IVAelectricidad, 'impuesto')
-    return factor_ivaelectricidad_conta
+        return lookup_value('impuestos', fila_IVAelectricidad, 'impuesto')
 
-# no entiendo esta función??????????????????????
 def factor_ivaelectricidad_noconta(provincia):
-    fila_IVAelectricidad = lookup_value('impuestos', 'tipo', 'IVA')
+    fila_IVAelectricidad = lookup_row('impuestos', 'tipo', 'IVA')
     if (provincia == 'Palmas, Las') or (provincia == 'Santa Cruz de Tenerife'):
-        factor_ivaelectricidad_noconta = 0
+        return 0
     elif (provincia == 'Ceuta') or (provincia == 'Melilla'):
-        factor_ivaelectricidad_noconta = lookup_value('impuestos', 6, 2)
+        return lookup_value('impuestos', 6, 2)
     else:
-        factor_ivaelectricidad_noconta = lookup_value('impuestos', fila_IVAelectricidad, 'impuesto')
-    return factor_ivaelectricidad_noconta
+        return lookup_value('impuestos', fila_IVAelectricidad, 'impuesto')
 
 ## QUE ES TRAMO????????????????
 def potencia_poromision(Npax, tipo_calefaccion, tramo):
@@ -407,6 +405,9 @@ def io_is_verano(zona_verano, tipo_vivienda, C1):
     return io_is_verano
 
 def calcula_c1(califE, zona_invierno, tipo_vivienda):
+    
+    zona_verano = str(zona_verano)  # ← forzar string pq en el csv se lee como string
+
     if tipo_vivienda == 'bloque':
         row = lookup_row('C1_bloque', 'zona', zona_invierno)
         calcula_c1 = lookup_value('C1_bloque', row, califE)
@@ -416,6 +417,9 @@ def calcula_c1(califE, zona_invierno, tipo_vivienda):
     return calcula_c1
 
 def calcula_c1_verano(califE, zona_verano, tipo_vivienda):
+  
+    zona_verano = str(zona_verano)
+    
     if zona_verano == '1':
         calcula_c1_verano = -1
     elif tipo_vivienda == 'bloque':

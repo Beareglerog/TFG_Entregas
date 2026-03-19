@@ -32,6 +32,9 @@ def load_all_tables():
     tables['alquiler equipos'] = pd.read_excel(f'{DATA_DIR}/alquiler equipos.xlsx')
     tables['Sur'] = pd.read_excel(f'{DATA_DIR}/Sur.xlsx')
 
+    for name in tables:
+        tables[name] = tables[name].dropna(how='all') #quito lineas vacias
+
     
     # Limpiar columnas de todas las tablas
     #for name, df in tables.items():
@@ -85,28 +88,18 @@ def lookup_row(table_name, columna, value):
 
     # Si columna es índice numérico
     if isinstance(columna, int):
-        rows = df[df.iloc[:, columna] == value]
+        col_data = df[df.iloc[:, columna] == value]
     else:
-        rows = df[df[columna] == value]
+        col_data = df[df[columna] == value]
+
+    # Comparar ambos como string para evitar problemas de tipo
+    rows = df[col_data.astype(str).str.strip() == str(value).strip()]
 
     if len(rows) == 0:
         raise ValueError(f"No encontrado: {columna}={value} en '{table_name}'")
 
     # Devolver índice 1-based (porque lookup_value usa fila-1)
     return rows.index[0] + 1
-
-
-#def lookup_value(df, fila, columna):
-
-   # try:
-     #   if isinstance(columna, int):
-       #     return df.iloc[fila - 1, columna - 1]
-      #  elif isinstance(columna, str):
-        #    return df.iloc[fila - 1][columna]
-       # else:
-          #  raise TypeError("columna debe ser el índice de la columna entero o el nombre de columna")
-  #  except (IndexError, KeyError):
-     #   raise ValueError(f"Lookup fuera de rango: fila={fila}, columna={columna}")
 
 def lookup_value(table_name, fila, columna):
 
@@ -117,10 +110,19 @@ def lookup_value(table_name, fila, columna):
 
     try:
         if isinstance(columna, int):
-            return df.iloc[fila - 1, columna - 1]
+            val = df.iloc[fila - 1, columna - 1]
         else:
-            return df.iloc[fila - 1][columna]
+            val = df.iloc[fila - 1][columna]
     except (IndexError, KeyError):
         raise ValueError(
             f"Lookup fuera de rango en '{table_name}': fila={fila}, columna={columna}"
         )
+
+    # Auto-convert numeric strings (handles both "0,27" and "0.27")
+    if isinstance(val, str):
+        try:
+            return float(val.replace(",", "."))
+        except (ValueError, TypeError):
+            return val  # keep as string if not numeric (e.g. "A3", "punta")
+    
+    return val
