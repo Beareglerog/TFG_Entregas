@@ -250,6 +250,8 @@ def factor_ivaelectricidad_noconta(provincia):
 
 ## QUE ES TRAMO????????????????
 def potencia_poromision(Npax, tipo_calefaccion, tramo):
+
+    #DUDA: VA POR NUMERO DE PERSONAS? PQ NOSE PQ ME SALE FUERA DE INDICE CUANDO HAGO MAS DE 5 PERSONAS EN UNA CASA
     potencia_minima = [2.4, 3.3, 3.8, 4.3, 4.9]
     potencia_maxima = [4.4, 6.0, 6.9, 7.8, 8.9]
     if Npax >= 5:
@@ -550,11 +552,11 @@ def ocupado(ocupacion, Col):
         case 0:
             ocupado = 0
         case 1:
-            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '01'), Col)
+            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '1'), Col)
         case 2:
-            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '02'), Col)
+            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '2'), Col)
         case 3:
-            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '03'), Col)
+            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '3'), Col)
         case _: #default
             raise ValueError(f"Valor no válido: {ocupacion}")
     
