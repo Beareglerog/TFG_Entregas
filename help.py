@@ -33,7 +33,8 @@ def load_all_tables():
     tables['Sur'] = pd.read_excel(f'{DATA_DIR}/Sur.xlsx')
 
     for name in tables:
-        tables[name] = tables[name].dropna(how='all') #quito lineas vacias
+        #tables[name] = tables[name].dropna(how='all') #quito lineas vacias
+        tables[name] = tables[name].dropna(how='all').reset_index(drop=True)
 
     
     # Limpiar columnas de todas las tablas
@@ -86,19 +87,16 @@ def lookup_row(table_name, columna, value):
 
     df = tables[table_name]
 
-    # Si columna es índice numérico
     if isinstance(columna, int):
-        col_data = df[df.iloc[:, columna] == value]
+        serie = df.iloc[:, columna]
     else:
-        col_data = df[df[columna] == value]
+        serie = df[columna]
 
-    # Comparar ambos como string para evitar problemas de tipo
-    rows = df[col_data.astype(str).str.strip() == str(value).strip()]
+    rows = df[serie.astype(str).str.strip().str.replace('.0', '', regex=False) == str(value).strip()]
 
     if len(rows) == 0:
         raise ValueError(f"No encontrado: {columna}={value} en '{table_name}'")
 
-    # Devolver índice 1-based (porque lookup_value usa fila-1)
     return rows.index[0] + 1
 
 def lookup_value(table_name, fila, columna):
@@ -112,7 +110,7 @@ def lookup_value(table_name, fila, columna):
         if isinstance(columna, int):
             val = df.iloc[fila - 1, columna - 1]
         else:
-            val = df.iloc[fila - 1][columna]
+            val = df.iloc[fila - 1][str(columna).strip()]
     except (IndexError, KeyError):
         raise ValueError(
             f"Lookup fuera de rango en '{table_name}': fila={fila}, columna={columna}"

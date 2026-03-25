@@ -330,7 +330,8 @@ def tarifa_suministroref(zona_verano):
     if zona_verano == '1': 
         tarifa_suministroref = 0 
     else: 
-        fila_pesos = lookup_row('pesos tarifa electrica verano', 1, zona_verano) 
+        #fila_pesos = lookup_row('pesos tarifa electrica verano', 1, zona_verano) 
+        fila_pesos = lookup_row('pesos tarifa electrica verano', 0, zona_verano) 
         peso_punta = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_punta')).replace(",", "."))
         peso_valle = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_valle')).replace(",", ".")) 
         peso_llano = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_llano')).replace(",", ".")) 
