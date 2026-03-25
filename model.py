@@ -37,7 +37,7 @@ def zonainv(provincia, altitud):
 
 def zonaver(provincia, altitud):
 
-    return zona_climatica(provincia, altitud)[1]  # número
+    return zona_climatica(provincia, altitud)[1] # número pero lo pongo como string porque luego se necesita como string
 
 def zona_inv_localidad(provincia, altitud):
 
@@ -407,7 +407,7 @@ def io_is_verano(zona_verano, tipo_vivienda, C1):
 
 def calcula_c1(califE, zona_invierno, tipo_vivienda):
     
-    zona_verano = str(zona_verano)  # ← forzar string pq en el csv se lee como string
+    zona_invierno = str(zona_invierno)  # ← forzar string pq en el csv se lee como string
 
     if tipo_vivienda == 'bloque':
         row = lookup_row('C1_bloque', 'zona', zona_invierno)
