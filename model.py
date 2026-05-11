@@ -61,7 +61,7 @@ def zona_inv_localidad(provincia, altitud):
 def demanda_referenciacalefaccion(provincia, altitud, tipo_vivienda):
     zonainvlocalidad = zona_inv_localidad(provincia, altitud)
     # para zona inv localidad, que tipo de referencias son a3c, a2c, b2c, c2c ?????????????????????
-    row = lookup_row('sci_referencia', 0, zonainvlocalidad)
+    row = lookup_row('sci_referencia', 'zona referencia', zonainvlocalidad)
     # no entiendo que es el sci
     SCI = lookup_value('sci_referencia', row, 2)
     # calcula el sci pero no se usa para nada ???????????????????????????????
@@ -75,25 +75,46 @@ def demanda_referenciacalefaccion(provincia, altitud, tipo_vivienda):
     #float(str(C1).replace(",", "."))
 
 # que es scv ???????????????????????????????????????
-def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
-    zonaverlocalidad = zona_inv_localidad(provincia, altitud)
-    row = lookup_row('scv_referencia', 0, zonaverlocalidad)
-    SCV = lookup_value('scv_referencia', row, 2)
+#def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
+   ### zonaverlocalidad = zona_inv_localidad(provincia, altitud)
+   ## row = lookup_row('scv_referencia', 'zona referencia', zonaverlocalidad)
+   # SCV = lookup_value('scv_referencia', row, 2)
     # calcula el scv pero no se usa para nada ???????????????????????????????
     # Por que nuevo ?????????????????????????????? si no se ha comprobado nada de fechas ???????????????
-    if (tipo_vivienda == 'bloque'):
-        demanda_referenciarefrig = lookup_value('scv_referencia', row, 'DR nuevo bloque')
-    else:
-        demanda_referenciarefrig = lookup_value('scv_referencia', row, 'DR nuevo unif')
+    #####if (tipo_vivienda == 'bloque'):
+    ###    demanda_referenciarefrig = lookup_value('scv_referencia', row, 'DR nuevo bloque')
+   #### else:
+    ##    demanda_referenciarefrig = lookup_value('scv_referencia', row, 'DR nuevo unif')
     
-    return demanda_referenciarefrig
+   # return demanda_referenciarefrig
+
+def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
+    zonaverlocalidad = zona_inv_localidad(provincia, altitud)
+    try:
+        row = lookup_row('scv_referencia', 'zona referencia', zonaverlocalidad)
+    except ValueError:
+        print(f"Zona '{zonaverlocalidad}' no encontrada en scv_referencia")
+        raise
+    if tipo_vivienda == 'bloque':
+        col = 'DR nuevo bloque'
+    else:
+        col = 'DR nuevo unif'
+    valor = lookup_value('scv_referencia', row, col)
+    # Conversión segura a float
+    if isinstance(valor, str):
+        valor = float(valor.replace(',', '.'))
+    else:
+        valor = float(valor)    
+    return valor
+
 
 def elevacion(altitud, fila_capital):
     if altitud >= 8000:
-        elevacion = 0
+        return 0
     else:
-        elevacion = altitud - lookup_value('Temp red ACS', fila_capital, 2)  # columna B = altitud capital
-    return elevacion
+        altitud_capital = lookup_value('Temp red ACS', fila_capital, 'altitud_capACS')
+        elev = altitud - float(altitud_capital)
+        return elev
 
 def referencia(tipo_vivienda):
     if tipo_vivienda == 'unifamiliar':
@@ -409,7 +430,8 @@ def io_is_verano(zona_verano, tipo_vivienda, C1):
 
 def calcula_c1(califE, zona_invierno, tipo_vivienda):
     
-    zona_invierno = str(zona_invierno)  # ← forzar string pq en el csv se lee como string
+    zona_invierno = str(zona_invierno)
+    print ("zona invierno: " + zona_invierno)  
 
     if tipo_vivienda == 'bloque':
         row = lookup_row('C1_bloque', 'zona', zona_invierno)
@@ -419,6 +441,7 @@ def calcula_c1(califE, zona_invierno, tipo_vivienda):
         calcula_c1 = lookup_value('C1_unifamiliar', row, califE)
     return calcula_c1
 
+####esta funcion está bien
 def calcula_c1_verano(califE, zona_verano, tipo_vivienda):
   
     zona_verano = str(zona_verano)
@@ -427,11 +450,13 @@ def calcula_c1_verano(califE, zona_verano, tipo_vivienda):
         calcula_c1_verano = -1
     elif tipo_vivienda == 'bloque':
         row = lookup_row('C1_bloque_verano', 'zona', zona_verano)
+        print("row: " + str(row))
         calcula_c1_verano = lookup_value('C1_bloque_verano', row, califE)
     else:
         row = lookup_row('C1_unifamiliar_verano', 'zona', zona_verano)
         calcula_c1_verano = lookup_value('C1_unifamiliar_verano', row, califE)
-    return calcula_c1_verano
+    ############FALLO########################################################################################################
+    return calcula_c1_verano/1000
 
 def corrige_zona1(zona_verano):
     if zona_verano==1:
@@ -478,19 +503,30 @@ def miembro(Npax):
 
 #Función para saber columna en la que posicionarse en las Lookup Tables
 # (Si se le resta uno obtenemos el nº de miembros numéricamente)
+#def columna(Npax):
+   # match Npax:
+       # case 1:
+         #   columna = 2
+        #case 2:
+            #columna = 3
+        #case 3:
+          #  columna = 4
+       # case 4:
+       #     columna = 5
+       # case _: #default
+       #     columna = 6
+    #return columna
 def columna(Npax):
-    match Npax:
-        case 1:
-            columna = 2
-        case 2:
-            columna = 3
-        case 3:
-            columna = 4
-        case 4:
-            columna = 5
-        case _: #default
-            columna = 6
-    return columna
+    if Npax == 1:
+        return 1
+    elif Npax == 2:
+        return 2
+    elif Npax == 3:
+        return 3
+    elif Npax == 4:
+        return 4
+    else:
+        return 'Mas de 4'
 
 #Funcion para calculo de gasto electrico de cada aparato
 def gesin(nombre_aparato, miembros):
@@ -548,90 +584,86 @@ def consumo_electrico(cocina, horno, lavadora, secadora, frigorifico, congelador
 #Funciones para determinar miembros con el mismo trabajo
 def ocupado(ocupacion, Col):
     match ocupacion:
-
         case 0:
-            ocupado = 0
+            return 0
         case 1:
-            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '1'), Col)
+            fila = lookup_row('Factores', 'Clase', 'O1')
+            return lookup_value('Factores', fila, Col)
         case 2:
-            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '2'), Col)
+            fila = lookup_row('Factores', 'Clase', 'O2')
+            return lookup_value('Factores', fila, Col)
         case 3:
-            ocupado = lookup_value('Factores', lookup_row('Factores', 1, '3'), Col)
-        case _: #default
+            fila = lookup_row('Factores', 'Clase', 'O3')
+            return lookup_value('Factores', fila, Col)
+        case _:
             raise ValueError(f"Valor no válido: {ocupacion}")
-    
-    return ocupado
 
 def parado(ocupacion, Col):
     match ocupacion:
         case 0:
-            parado = 0
+            return 0
         case 1:
-            parado = lookup_value('Factores', lookup_row('Factores', 1, 'P1'), Col)
-        case _:
-            parado = lookup_value('Factores', lookup_row('Factores', 1, 'P2'), Col)
- 
-    return parado
+            fila = lookup_row('Factores', 'Clase', 'P1')
+            return lookup_value('Factores', fila, Col)
+        case _:  # 2 o más? tu código original usaba P2 para cualquier otro valor
+            fila = lookup_row('Factores', 'Clase', 'P2')
+            return lookup_value('Factores', fila, Col)
 
 
 def estudiante(ocupacion, Col):
     match ocupacion:
         case 0:
-            estudiante = 0
+            return 0
         case 1:
-            estudiante = lookup_value('Factores', lookup_row('Factores', 1, 'E1'), Col)
+            fila = lookup_row('Factores', 'Clase', 'E1')
+            return lookup_value('Factores', fila, Col)
         case _:
-            estudiante = lookup_value('Factores', lookup_row('Factores', 1, 'E2'), Col)
- 
-    return estudiante
+            fila = lookup_row('Factores', 'Clase', 'E2')
+            return lookup_value('Factores', fila, Col)
 
 def jubilado(ocupacion, Col):
     match ocupacion:
         case 0:
-            jubilado = 0
+            return 0
         case 1:
-            jubilado = lookup_value('Factores', lookup_row('Factores', 1, 'J1'), Col)
+            fila = lookup_row('Factores', 'Clase', 'J1')
+            return lookup_value('Factores', fila, Col)
         case _:
-            jubilado = lookup_value('Factores', lookup_row('Factores', 1, 'J2'), Col)
- 
-    return jubilado
+            fila = lookup_row('Factores', 'Clase', 'J2')
+            return lookup_value('Factores', fila, Col)
 
 
 def incapacitado(ocupacion, Col):
     match ocupacion:
         case 0:
-            incapacitado = 0
+            return 0
         case _:
-            incapacitado = lookup_value('Factores', lookup_row('Factores', 1, 'Pe1'), Col)
- 
-    return incapacitado
+            fila = lookup_row('Factores', 'Clase', 'Pe1')
+            return lookup_value('Factores', fila, Col)
 
 def viudo(ocupacion, Col):
     match ocupacion:
         case 0:
-            viudo = 0
+            return 0
         case _:
-            viudo = lookup_value('Factores', lookup_row('Factores', 1, 'Pe2'), Col)
- 
-    return viudo
+            fila = lookup_row('Factores', 'Clase', 'Pe2')
+            return lookup_value('Factores', fila, Col)
 
 def ama(ocupacion, Col):
     match ocupacion:
         case 0:
-            ama = 0
+            return 0
         case _:
-            ama = lookup_value('Factores', lookup_row('Factores', 1, 'C'), Col)
- 
-    return ama
+            fila = lookup_row('Factores', 'Clase', 'C')
+            return lookup_value('Factores', fila, Col)
 
 def otro(ocupacion, Col):
     match ocupacion:
         case 0:
-            otro = 0
+            return 0
         case _:
-            otro = lookup_value('Factores', lookup_row('Factores', 1, 'X'), Col)
- 
-    return otro
+            fila = lookup_row('Factores', 'Clase', 'X')
+            return lookup_value('Factores', fila, Col)
 
 # Funcion para determinar cada factor de cada tipo de trabajo
 

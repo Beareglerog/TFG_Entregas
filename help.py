@@ -4,81 +4,37 @@ tables = {}
 DATA_DIR = "data/Lookup_Tables"
 
 def load_all_tables():
-    """Carga todas las tablas al inicio"""
     tables['zonas'] = pd.read_excel(f'{DATA_DIR}/zonas.xlsx')
-    tables['C1_bloque'] = pd.read_excel(f'{DATA_DIR}/C1_bloque.xlsx')
-    tables['C1_unifamiliar'] = pd.read_excel(f'{DATA_DIR}/C1_unifamiliar.xlsx')
-    tables['C1_bloque_verano'] = pd.read_excel(f'{DATA_DIR}/C1_bloque_verano.xlsx')
-    tables['C1_unifamiliar_verano'] = pd.read_excel(f'{DATA_DIR}/C1_unifamiliar_verano.xlsx')
-    tables['Dispersion R'] = pd.read_excel(f'{DATA_DIR}/Dispersion R.xlsx')
-    tables['Dispersion R verano'] = pd.read_excel(f'{DATA_DIR}/Dispersion R verano.xlsx')
-    tables['sci_referencia'] = pd.read_excel(f'{DATA_DIR}/sci_referencia.xlsx')
-    tables['scv_referencia'] = pd.read_excel(f'{DATA_DIR}/scv_referencia.xlsx')
-    tables['SEER'] = pd.read_excel(f'{DATA_DIR}/SEER.xlsx')
-    tables['HSPF_nuevo'] = pd.read_excel(f'{DATA_DIR}/HSPF_nuevo.xlsx')
-    tables['HSPF_existente'] = pd.read_excel(f'{DATA_DIR}/HSPF_existente.xlsx')
-    tables['Temp red ACS'] = pd.read_excel(f'{DATA_DIR}/Temp red ACS.xlsx')
-    tables['ACS_SPFnuevo'] = pd.read_excel(f'{DATA_DIR}/ACS_SPFnuevo.xlsx')
-    tables['ACS_SPFexistente'] = pd.read_excel(f'{DATA_DIR}/ACS_SPFexistente.xlsx')
-    tables['CMECon'] = pd.read_excel(f'{DATA_DIR}/CMECon.xlsx')
-    tables['CMESin'] = pd.read_excel(f'{DATA_DIR}/CMESin.xlsx')
-    tables['Penetracion'] = pd.read_excel(f'{DATA_DIR}/Penetracion.xlsx')
-    tables['Factores'] = pd.read_excel(f'{DATA_DIR}/Factores.xlsx')
-    tables['impuestos'] = pd.read_excel(f'{DATA_DIR}/impuestos.xlsx')
-    tables['tarifas'] = pd.read_excel(f'{DATA_DIR}/tarifas.xlsx')
-    tables['pvpc'] = pd.read_excel(f'{DATA_DIR}/pvpc.xlsx')
-    tables['pesos tarifa electrica'] = pd.read_excel(f'{DATA_DIR}/pesos tarifa electrica.xlsx')
-    tables['pesos tarifa electrica verano'] = pd.read_excel(f'{DATA_DIR}/pesos tarifa electrica verano.xlsx')
-    tables['alquiler equipos'] = pd.read_excel(f'{DATA_DIR}/alquiler equipos.xlsx')
-    tables['Sur'] = pd.read_excel(f'{DATA_DIR}/Sur.xlsx')
+    tables['C1_bloque'] = pd.read_excel(f'{DATA_DIR}/C1_bloque.xlsx', thousands='.', decimal=',')
+    tables['C1_unifamiliar'] = pd.read_excel(f'{DATA_DIR}/C1_unifamiliar.xlsx', thousands='.', decimal=',')
+    tables['C1_bloque_verano'] = pd.read_excel(f'{DATA_DIR}/C1_bloque_verano.xlsx', thousands='.', decimal=',')
+    tables['C1_unifamiliar_verano'] = pd.read_excel(f'{DATA_DIR}/C1_unifamiliar_verano.xlsx', thousands='.', decimal=',')
+    tables['Dispersion R'] = pd.read_excel(f'{DATA_DIR}/Dispersion R.xlsx', thousands='.', decimal=',')
+    tables['Dispersion R verano'] = pd.read_excel(f'{DATA_DIR}/Dispersion R verano.xlsx', thousands='.', decimal=',')
+    # OJO: estas dos tablas tienen decimales con coma
+    tables['sci_referencia'] = pd.read_excel(f'{DATA_DIR}/sci_referencia.xlsx', thousands='.', decimal=',')
+    tables['scv_referencia'] = pd.read_excel(f'{DATA_DIR}/scv_referencia.xlsx', thousands='.', decimal=',')
+    tables['SEER'] = pd.read_excel(f'{DATA_DIR}/SEER.xlsx', thousands='.', decimal=',')
+    tables['HSPF_nuevo'] = pd.read_excel(f'{DATA_DIR}/HSPF_nuevo.xlsx', thousands='.', decimal=',')
+    tables['HSPF_existente'] = pd.read_excel(f'{DATA_DIR}/HSPF_existente.xlsx', thousands='.', decimal=',')
+    tables['Temp red ACS'] = pd.read_excel(f'{DATA_DIR}/Temp red ACS.xlsx', thousands='.', decimal=',')
+    tables['ACS_SPFnuevo'] = pd.read_excel(f'{DATA_DIR}/ACS_SPFnuevo.xlsx', thousands='.', decimal=',')
+    tables['ACS_SPFexistente'] = pd.read_excel(f'{DATA_DIR}/ACS_SPFexistente.xlsx', thousands='.', decimal=',')
+    tables['CMECon'] = pd.read_excel(f'{DATA_DIR}/CMECon.xlsx', thousands='.', decimal=',')
+    tables['CMESin'] = pd.read_excel(f'{DATA_DIR}/CMESin.xlsx', thousands='.', decimal=',')
+    tables['Penetracion'] = pd.read_excel(f'{DATA_DIR}/Penetracion.xlsx', thousands='.', decimal=',')
+    tables['Factores'] = pd.read_excel(f'{DATA_DIR}/Factores.xlsx', thousands='.', decimal=',')
+    tables['impuestos'] = pd.read_excel(f'{DATA_DIR}/impuestos.xlsx', thousands='.', decimal=',')
+    tables['tarifas'] = pd.read_excel(f'{DATA_DIR}/tarifas.xlsx', thousands='.', decimal=',')
+    tables['pvpc'] = pd.read_excel(f'{DATA_DIR}/pvpc.xlsx', thousands='.', decimal=',')
+    tables['pesos tarifa electrica'] = pd.read_excel(f'{DATA_DIR}/pesos tarifa electrica.xlsx', thousands='.', decimal=',')
+    tables['pesos tarifa electrica verano'] = pd.read_excel(f'{DATA_DIR}/pesos tarifa electrica verano.xlsx', thousands='.', decimal=',')
+    tables['alquiler equipos'] = pd.read_excel(f'{DATA_DIR}/alquiler equipos.xlsx', thousands='.', decimal=',')
+    tables['Sur'] = pd.read_excel(f'{DATA_DIR}/Sur.xlsx', thousands='.', decimal=',')
+    tables['Canarias'] = pd.read_excel(f'{DATA_DIR}/Canarias.xlsx', thousands='.', decimal=',')
 
     for name in tables:
-        #tables[name] = tables[name].dropna(how='all') #quito lineas vacias
         tables[name] = tables[name].dropna(how='all').reset_index(drop=True)
-
-    
-    # Limpiar columnas de todas las tablas
-    #for name, df in tables.items():
-     #    df.columns = [c.strip() for c in df.columns]
-
-#def read_table (name):
-   # if name not in tables:
-       # df = pd.read_excel(f"{DATA_DIR}/{name}.XLSX")
-        # Formateo todas las columnas igual y quito espacios
-      #  df.columns = [c.strip() for c in df.columns]
-    #    tables[name] = df
-   # return tables[name]
-
-#def load_tables():
-    #names = [
-      #  "zonas",
-      #  "C1_bloque",
-      #  "C1_unifamiliar",
-     #   "C1_bloque_verano",
-    #    "C1_unifamiliar_verano",
-     #   "Dispersion R",
-     #   "Dispersion R verano",
-    #    "sci_referencia",
-   #     "scv_referencia",
-   #     "SEER",
-   #     "HSPF_nuevo",
-   ##     "HSPF_existente",
-   #     "Temp red ACS",
-   #     "ACS_SPFnuevo",
-   #     "ACS_SPFexistente",
-   #     "CMECon",
-   #     "CMESin",
-    #    "Penetracion",
-   #     "Factores",
-   #     "impuestos",
-   #     "tarifas",
-   #     "pvpc",
-    #    "pesos tarifa electrica",
-   #     "pesos tarifa electrica verano",
-   #     "alquiler equipos",
-  #  ]
-  #  for name in names:
-   #     read_table(name)
 
 def lookup_row(table_name, columna, value):
 

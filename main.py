@@ -10,6 +10,7 @@ def run_demo(inputs):
 
     #Cargo tablas:
     load_all_tables()
+    
 
     # Extraigo inputs 
     provincia = inputs['provincia']
@@ -55,22 +56,20 @@ def run_demo(inputs):
     B[1:4] = [0.0066] * 3 # de 1 a 3
     B[10:13] = [0.0066] * 3
 
-    fila_capital = lookup_row('Temp red ACS',14,provincia) +1 #15 -1 -> la primera columna es 0 pero no entiendo pq le tengo que sumar 1 otra vez despues siya lo hago en la funcion
-
-
-    elevacion_var = elevacion(altitud, fila_capital + 1) #fila capital +1 porque lookup_value hace fila-1
+    fila_capital = lookup_row('Temp red ACS', 'Provincia', provincia)  
+    elevacion_var = elevacion(altitud, fila_capital)
 
     # Temperatura agua red
     temperatura_AguaRed = np.zeros(13)
 
     for i in range(1, 13):
         valor = lookup_value('Temp red ACS', fila_capital, i + 2)
-        temperatura_AguaRed[i] = float(str(valor).replace(",", ".")) - B[i] * elevacion_var
+        temperatura_AguaRed[i] = float(str(valor)) - B[i] * elevacion_var
 
     litros_paxACS = litros_acs(tipo_vivienda) 
-    demanda_ACS = Npax*litros_paxACS*(365/12)*4.176*(12*60-np.sum(temperatura_AguaRed[1:12]))/(3600) 
-    tabla_ACSspf = tabla_acsspf(califE) 
-    demanda_ACS = Npax*litros_paxACS*(365/12)*4.176*(12*60-np.sum(temperatura_AguaRed[1:12]))/(3600) 
+    demanda_ACS = Npax * litros_paxACS * (365/12) * 4.176 * (12*60 - np.sum(temperatura_AguaRed[1:13])) / 3600
+    tabla_ACSspf = tabla_acsspf(califE) #0.7679 
+    ###### calcula mal demanda_ACS
     tabla_ACSspf = tabla_acsspf(califE) 
     fila_ACS_SPF = lookup_row(tabla_ACSspf,'sistema',tipo_acs) 
     ACS_SPF = float(str(lookup_value(tabla_ACSspf, fila_ACS_SPF, inst_acs)).replace(",", ".")) 
@@ -79,7 +78,7 @@ def run_demo(inputs):
     # ACS
     # ======================
     zona_verano = zonaver(provincia, altitud) 
-    C1_verano = calcula_c1_verano(califE, zona_verano, tipo_vivienda) 
+    C1_verano = calcula_c1_verano(califE, zona_verano, tipo_vivienda)
     Io_Is_verano = io_is_verano(zona_verano,tipo_vivienda, C1_verano) 
     zona_invierno = zonainv(provincia, altitud) 
     C1 = calcula_c1(califE, zona_invierno, tipo_vivienda) 
@@ -105,7 +104,7 @@ def run_demo(inputs):
     # ======================
     # REFRIGERACIÓN
     # ======================
-    demanda_RefRef = demanda_referenciarefrig(provincia, altitud, tipo_vivienda) 
+    demanda_RefRef = demanda_referenciarefrig(provincia, altitud, tipo_vivienda)
     Io_Is_verano = io_is_verano(zona_verano,tipo_vivienda, C1_verano) 
     demanda_CorregidaSignoRef = Io_Is_verano * demanda_RefRef * superficie * ratio_supverano/100 
     demanda_CorregidaRef = fdemanda_corregidacal(demanda_CorregidaSignoRef) 
@@ -120,6 +119,7 @@ def run_demo(inputs):
     # ======================
     consumo_acs = demanda_ACS / ACS_SPF
     consumo_gnCAL = consumo_gas(tipo_calefaccion, tipo_acs, consumo_calefaccion, consumo_acs, inst_calefaccion, inst_acs, 'calefaccion') 
+    ###########calcula mal el coste
     coste_fijoCAL = tarifa_suministro(inst_calefaccion, tipo_calefaccion, consumo_gnCAL, 'fijo', provincia, zona_invierno, pot_contratada_punta_sinREF, pot_contratada_valle_sinREF) 
     coste_fijoCALreparto = coste_fijocalreparto(tipo_calefaccion, inst_calefaccion, coste_fijoCAL) 
     coste_variableCAL = tarifa_suministro(inst_calefaccion, tipo_calefaccion, consumo_gnCAL, 'variable', provincia, zona_invierno, pot_contratada_punta_sinREF, pot_contratada_valle_sinREF) 
@@ -162,8 +162,53 @@ def run_demo(inputs):
     gasto_ELEC_TOTAL_sinREF = gasto_ELEC_noTERMICO_sinREF + factor_electricidadacs(tipo_acs)*gasto_ACS + factor_electricidadcal(tipo_calefaccion)*gasto_CAL 
     gasto_COMBUSTIBLE = (1 - factor_electricidadacs(tipo_acs))*gasto_ACS + (1 - factor_electricidadcal(tipo_calefaccion))*gasto_CAL
 
+    ##############
+    zona_verano = zonaver(provincia, altitud)
+    zona_inv_local = zona_inv_localidad(provincia, altitud)
+    print(f"Zona inv localidad: {zona_inv_local}")
+    # Dentro de run_demo, después de zona_verano, C1_verano, etc.
 
-   
+    print("\n=== DEPURACIÓN REFRIGERACIÓN ===")
+    print(f"Provincia: {provincia}, altitud: {altitud}")
+    print(f"zona_verano (string): '{zona_verano}'")
+    print(f"zona_inv_localidad: {zona_inv_localidad(provincia, altitud)}")
+
+    # Lee la tabla scv_referencia directamente para ver qué devuelve
+    zona_test = zona_inv_localidad(provincia, altitud)
+    row_test = lookup_row('scv_referencia', 'zona referencia', zona_test)
+    print(f"Fila encontrada para '{zona_test}': {row_test}")
+
+    # Obtén los valores de demanda_ref (según tipo vivienda)
+    if tipo_vivienda == 'bloque':
+        col_dem = 'DR nuevo bloque'
+    else:
+        col_dem = 'DR nuevo unif'
+
+    demanda_RefRef_raw = lookup_value('scv_referencia', row_test, col_dem)
+    print(f"Valor crudo de '{col_dem}': {demanda_RefRef_raw} (tipo: {type(demanda_RefRef_raw)})")
+    # Fuerza la conversión a float con coma
+    if isinstance(demanda_RefRef_raw, str):
+        demanda_RefRef = float(demanda_RefRef_raw.replace(',', '.'))
+    else:
+        demanda_RefRef = float(demanda_RefRef_raw)
+    print(f"demanda_RefRef convertido (kWh/m²): {demanda_RefRef}")
+
+    print(f"Io_Is_verano: {Io_Is_verano}")
+    demanda_CorregidaSignoRef = Io_Is_verano * demanda_RefRef * superficie * (ratio_supverano / 100.0)
+    print(f"demanda_CorregidaSignoRef: {demanda_CorregidaSignoRef}")
+
+    demanda_CorregidaRef = fdemanda_corregidacal(demanda_CorregidaSignoRef)
+    print(f"demanda_CorregidaRef: {demanda_CorregidaRef}")
+
+    print(f"SEER: {SEER}")
+    consumo_refrigeracion = demanda_CorregidaRef / SEER if SEER != 0 else 0
+    print(f"consumo_refrigeracion (kWh): {consumo_refrigeracion}")
+    print(f"C1_verano = {C1_verano}")
+    row_R = lookup_row('Dispersion R verano', 'Zona', zona_verano)
+    R = lookup_value('Dispersion R verano', row_R, tipo_vivienda)
+    print(f"R (de Dispersion R verano) = {R}")
+    
+   ##############################
     return {
             # Demandas
             'demanda_CorregidaCal': demanda_CorregidaCal,
