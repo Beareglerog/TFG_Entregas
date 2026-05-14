@@ -48,6 +48,11 @@ def run_demo(inputs):
     n_viudos = inputs['viudos']
     n_amas = inputs['amas_casa']
     n_otros = inputs['otros']
+
+    print("inputs recibidos:")
+    for key, value in inputs.items():
+        print(f"  {key}: {value}")
+
      # ACS
 
     # NO ENTIENDO PQ SE HACE ESTO????????????????????????
@@ -207,6 +212,37 @@ def run_demo(inputs):
     row_R = lookup_row('Dispersion R verano', 'Zona', zona_verano)
     R = lookup_value('Dispersion R verano', row_R, tipo_vivienda)
     print(f"R (de Dispersion R verano) = {R}")
+
+        # Imprimir desglose de consumo eléctrico no térmico
+    print("\n=== DESGLOSE CONSUMO ELÉCTRICO ===")
+    print(f"Consumo cocina: {consumo_aparato(cocina,'Cocina', miembros):.2f}")
+    print(f"Consumo horno: {consumo_aparato(horno,'Horno', miembros):.2f}")
+    print(f"Consumo lavadora: {consumo_aparato(lavadora,'Lavadora', miembros):.2f}")
+    print(f"Consumo secadora: {consumo_aparato(secadora,'Secadora', miembros):.2f}")
+    print(f"Consumo frigorífico: {consumo_aparato(frigorifico,'Frigorifico', miembros):.2f}")
+    print(f"Consumo congelador: {consumo_aparato(congelador,'Congelador', miembros):.2f}")
+    print(f"Consumo TV: {consumo_aparato(tv,'TV', miembros):.2f}")
+    print(f"Consumo ordenador: {consumo_aparato(ordenador,'Ordenador', miembros):.2f}")
+    print(f"Consumo lavavajillas: {consumo_aparato(lavavajillas,'Lavavajillas', miembros):.2f}")
+    print(f"Consumo móvil: {consumo_aparato(movil,'Movil', miembros):.2f}")
+    print(f"Consumo tablet: {consumo_aparato(tablet,'Tablet', miembros):.2f}")
+    print(f"Consumo microondas: {consumo_aparato(microondas,'Microondas', miembros):.2f}")
+    print(f"GEI (iluminación): {gei(provincia, Npax, superficie):.2f}")
+    print(f"Factores ocupación: {factores(n_ocupados, n_parados, n_estudiantes, n_jubilados, n_incapacitados, n_viudos, n_amas, n_otros, miembros):.2f}")
+    print(f"Energía eléctrica total (1.07 * (suma + factores)): {energia_electrica:.2f}")
+
+    # Depuración de factores (temporal)
+    Col_temp = columna(miembros)
+    f_occ = factor(n_ocupados, 'Ocupado', Col_temp)
+    f_par = factor(n_parados, 'Parado', Col_temp)
+    f_est = factor(n_estudiantes, 'Estudiante', Col_temp)
+    f_jub = factor(n_jubilados, 'Jubilado', Col_temp)
+    f_inc = factor(n_incapacitados, 'Incapacitado', Col_temp)
+    f_viu = factor(n_viudos, 'Viudo', Col_temp)
+    f_ama = factor(n_amas, 'Ama', Col_temp)
+    f_otr = factor(n_otros, 'Otro', Col_temp)
+    print(f"Factores individuales: Ocupado={f_occ}, Parado={f_par}, Estudiante={f_est}, Jubilado={f_jub}, Incapacitado={f_inc}, Viudo={f_viu}, Ama={f_ama}, Otro={f_otr}")
+    print(f"Suma factores = {f_occ+f_par+f_est+f_jub+f_inc+f_viu+f_ama+f_otr}")
     
    ##############################
     return {

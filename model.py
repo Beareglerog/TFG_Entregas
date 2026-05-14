@@ -455,8 +455,7 @@ def calcula_c1_verano(califE, zona_verano, tipo_vivienda):
     else:
         row = lookup_row('C1_unifamiliar_verano', 'zona', zona_verano)
         calcula_c1_verano = lookup_value('C1_unifamiliar_verano', row, califE)
-    ############FALLO########################################################################################################
-    return calcula_c1_verano/1000
+    return calcula_c1_verano
 
 def corrige_zona1(zona_verano):
     if zona_verano==1:
@@ -503,38 +502,53 @@ def miembro(Npax):
 
 #Función para saber columna en la que posicionarse en las Lookup Tables
 # (Si se le resta uno obtenemos el nº de miembros numéricamente)
-#def columna(Npax):
-   # match Npax:
-       # case 1:
-         #   columna = 2
-        #case 2:
-            #columna = 3
-        #case 3:
-          #  columna = 4
-       # case 4:
-       #     columna = 5
-       # case _: #default
-       #     columna = 6
-    #return columna
 def columna(Npax):
     if Npax == 1:
-        return 1
-    elif Npax == 2:
         return 2
-    elif Npax == 3:
+    elif Npax == 2:
         return 3
-    elif Npax == 4:
+    elif Npax == 3:
         return 4
+    elif Npax == 4:
+        return 5
     else:
-        return 'Mas de 4'
+        return 6
+##def columna(Npax):
+    #if Npax == 1:
+       # return 1
+    #elif Npax == 2:
+    #    return 2
+    #elif Npax == 3:
+     #   return 3
+   ## elif Npax == 4:
+      ###  return 4
+    ####else:
+     #####   return 'Mas de 4'
 
 #Funcion para calculo de gasto electrico de cada aparato
 def gesin(nombre_aparato, miembros):
     Col = columna(miembros)
     if nombre_aparato in ('Lavavajillas', 'Secadora', 'Congelador', 'Ordenador'):
+        row_cme = lookup_row('CMECon', 0, nombre_aparato)
+        val_cme = lookup_value('CMECon', row_cme, Col)
+        val_cme_float = float(str(val_cme).replace(",", "."))
+        print(f"  CMECon raw: {val_cme} -> float: {val_cme_float}")
+        
+        row_pen = lookup_row('Penetracion', 0, nombre_aparato)
+        val_pen = lookup_value('Penetracion', row_pen, 2)
+        val_pen_float = float(str(val_pen).replace(",", "."))
+        print(f"  Penetracion raw: {val_pen} -> float: {val_pen_float}")
+        gesin = val_cme_float / val_pen_float
+        print(f"  Resultado gesin = {gesin}")
         gesin = float(str(lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col)).replace(",", ".")) / float(str(lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)).replace(",", "."))
+    
     else:
         gesin = float(str(lookup_value('CMESin', lookup_row('CMESin', 0, nombre_aparato), Col)).replace(",", "."))
+        row_cme = lookup_row('CMESin', 0, nombre_aparato)
+        val = lookup_value('CMESin', row_cme, Col)
+        gesin = float(str(val).replace(",", "."))
+        print(f"  CMESin raw: {val} -> float: {gesin}")
+    
     return gesin
 
 def gecon(nombre_aparato, miembros):
