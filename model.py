@@ -4,14 +4,12 @@ import streamlit as st
 import math
 from help import *
 
-#################### la tabla sur no se usa
 
 DATA_DIR = "data/Lookup_Tables"
 tables = {}
 
 def zona_climatica(provincia, altitud):
 
-    # row = Lookup$Row('zonas';31;provincia$)
     row = lookup_row('zonas', 'Provincia', provincia)
 
 # Indice bruto es como interpolar la altitud en las columnas de la tabla
@@ -60,33 +58,14 @@ def zona_inv_localidad(provincia, altitud):
 
 def demanda_referenciacalefaccion(provincia, altitud, tipo_vivienda):
     zonainvlocalidad = zona_inv_localidad(provincia, altitud)
-    # para zona inv localidad, que tipo de referencias son a3c, a2c, b2c, c2c ?????????????????????
     row = lookup_row('sci_referencia', 'zona referencia', zonainvlocalidad)
-    # no entiendo que es el sci
     SCI = lookup_value('sci_referencia', row, 2)
-    # calcula el sci pero no se usa para nada ???????????????????????????????
-    # Por que nuevo ?????????????????????????????? si no se ha comprobado nada de fechas ???????????????
     if (tipo_vivienda == 'bloque'):
         demanda_referenciacalefaccion = lookup_value('sci_referencia', row, 'DR nuevo bloque')
     else:
         demanda_referenciacalefaccion = lookup_value('sci_referencia', row, 'DR nueva vivienda')
     
     return demanda_referenciacalefaccion
-    #float(str(C1).replace(",", "."))
-
-# que es scv ???????????????????????????????????????
-#def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
-   ### zonaverlocalidad = zona_inv_localidad(provincia, altitud)
-   ## row = lookup_row('scv_referencia', 'zona referencia', zonaverlocalidad)
-   # SCV = lookup_value('scv_referencia', row, 2)
-    # calcula el scv pero no se usa para nada ???????????????????????????????
-    # Por que nuevo ?????????????????????????????? si no se ha comprobado nada de fechas ???????????????
-    #####if (tipo_vivienda == 'bloque'):
-    ###    demanda_referenciarefrig = lookup_value('scv_referencia', row, 'DR nuevo bloque')
-   #### else:
-    ##    demanda_referenciarefrig = lookup_value('scv_referencia', row, 'DR nuevo unif')
-    
-   # return demanda_referenciarefrig
 
 def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
     zonaverlocalidad = zona_inv_localidad(provincia, altitud)
@@ -107,14 +86,17 @@ def demanda_referenciarefrig(provincia, altitud, tipo_vivienda):
         valor = float(valor)    
     return valor
 
-
 def elevacion(altitud, fila_capital):
+    # Si la altitud es igual o superior a 8000, no hay corrección
     if altitud >= 8000:
         return 0
+    # Obtener la altitud de la capital desde la tabla 'Temp red ACS'
+    altitud_capital = lookup_value('Temp red ACS', fila_capital, 'altitud_capACS')
+    # Aplicar la corrección solo si la altitud del usuario es mayor
+    if altitud > altitud_capital:
+        return altitud - altitud_capital
     else:
-        altitud_capital = lookup_value('Temp red ACS', fila_capital, 'altitud_capACS')
-        elev = altitud - float(altitud_capital)
-        return elev
+        return 0
 
 def referencia(tipo_vivienda):
     if tipo_vivienda == 'unifamiliar':
@@ -269,16 +251,15 @@ def factor_ivaelectricidad_noconta(provincia):
     else:
         return lookup_value('impuestos', fila_IVAelectricidad, 'impuesto')
 
-## QUE ES TRAMO????????????????
 def potencia_poromision(Npax, tipo_calefaccion, tramo):
 
-    #DUDA: VA POR NUMERO DE PERSONAS? PQ NOSE PQ ME SALE FUERA DE INDICE CUANDO HAGO MAS DE 5 PERSONAS EN UNA CASA
     potencia_minima = [2.4, 3.3, 3.8, 4.3, 4.9]
     potencia_maxima = [4.4, 6.0, 6.9, 7.8, 8.9]
     if Npax >= 5:
-        N = 5
+        N = 4
     else:
-        N = Npax
+        #############antes N=Npax
+        N = Npax - 1
     if (tipo_calefaccion == 'electricidad (radiadores)') or (tipo_calefaccion == 'electricidad (acumuladores)') or (tipo_calefaccion == 'bomba de calor'):
         if tipo_calefaccion == 'electricidad (acumuladores)':
             if tramo == 'Punta':
@@ -501,29 +482,18 @@ def miembro(Npax):
     return miembro
 
 #Función para saber columna en la que posicionarse en las Lookup Tables
-# (Si se le resta uno obtenemos el nº de miembros numéricamente)
-def columna(Npax):
-    if Npax == 1:
+def columna(miembros):
+    if miembros == '1':
         return 2
-    elif Npax == 2:
+    elif miembros == '2':
         return 3
-    elif Npax == 3:
+    elif miembros == '3':
         return 4
-    elif Npax == 4:
+    elif miembros == '4':
         return 5
-    else:
+    else:  # 'Mas de 4'
         return 6
-##def columna(Npax):
-    #if Npax == 1:
-       # return 1
-    #elif Npax == 2:
-    #    return 2
-    #elif Npax == 3:
-     #   return 3
-   ## elif Npax == 4:
-      ###  return 4
-    ####else:
-     #####   return 'Mas de 4'
+
 
 #Funcion para calculo de gasto electrico de cada aparato
 def gesin(nombre_aparato, miembros):
@@ -699,6 +669,7 @@ def factor(ocupacion, nombre_ocupacion, Col):
             factor = ama(ocupacion, Col) 
         case _:
             factor = otro(ocupacion,Col) 
+    print("factor " + nombre_ocupacion + ": " + str(factor))
     return factor
 
 # Funcion para determinar la suma de todos los factores
@@ -706,6 +677,7 @@ def factor(ocupacion, nombre_ocupacion, Col):
 def factores(ocupado, parado, estudiante, jubilado, incapacitado, viudo, ama, otro, miembros):
     Col = columna(miembros) 
     factores = factor(ocupado, 'Ocupado', Col) +factor(parado,'Parado', Col) + factor(estudiante, 'Estudiante', Col) + factor(jubilado, 'Jubilado', Col) + factor(incapacitado, 'Incapacitado', Col) + factor(viudo, 'Viudo', Col) + factor(ama, 'Ama', Col) + factor(otro, 'Otro', Col) 
+    print("factores: " + str(factores))
     return factores
  
 

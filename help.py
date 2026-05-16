@@ -11,7 +11,6 @@ def load_all_tables():
     tables['C1_unifamiliar_verano'] = pd.read_excel(f'{DATA_DIR}/C1_unifamiliar_verano.xlsx', thousands='.', decimal=',')
     tables['Dispersion R'] = pd.read_excel(f'{DATA_DIR}/Dispersion R.xlsx', thousands='.', decimal=',')
     tables['Dispersion R verano'] = pd.read_excel(f'{DATA_DIR}/Dispersion R verano.xlsx', thousands='.', decimal=',')
-    # OJO: estas dos tablas tienen decimales con coma
     tables['sci_referencia'] = pd.read_excel(f'{DATA_DIR}/sci_referencia.xlsx', thousands='.', decimal=',')
     tables['scv_referencia'] = pd.read_excel(f'{DATA_DIR}/scv_referencia.xlsx', thousands='.', decimal=',')
     tables['SEER'] = pd.read_excel(f'{DATA_DIR}/SEER.xlsx', thousands='.', decimal=',')

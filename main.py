@@ -49,13 +49,13 @@ def run_demo(inputs):
     n_amas = inputs['amas_casa']
     n_otros = inputs['otros']
 
+
     print("inputs recibidos:")
     for key, value in inputs.items():
         print(f"  {key}: {value}")
 
      # ACS
 
-    # NO ENTIENDO PQ SE HACE ESTO????????????????????????
     B = np.zeros(13)  # creo el vector
     B[4:10] = [0.0033] * 6 ## pongo 0.0033 desde la posicion 4, 6 veces (de 4 a 10)
     B[1:4] = [0.0066] * 3 # de 1 a 3
@@ -141,7 +141,6 @@ def run_demo(inputs):
     pot_contratada_sinREF = pot_contratada_punta_sinREF 
 
     #potencia normalizada para obtener el coste { energia_electrica = 3363} 
-    ########## ratio supverano ???
     if ratio_supverano < 30:
         pot_contratada_punta_conREF0 = 5.0
         pot_contratada_valle_conREF0 = 5.0
@@ -166,84 +165,8 @@ def run_demo(inputs):
     gasto_ELEC_TOTAL_conREF = gasto_ELEC_noTERMICO_conREF + factor_electricidadacs(tipo_acs)*gasto_ACS + factor_electricidadcal(tipo_calefaccion)*gasto_CAL + gasto_REFRIGERACION 
     gasto_ELEC_TOTAL_sinREF = gasto_ELEC_noTERMICO_sinREF + factor_electricidadacs(tipo_acs)*gasto_ACS + factor_electricidadcal(tipo_calefaccion)*gasto_CAL 
     gasto_COMBUSTIBLE = (1 - factor_electricidadacs(tipo_acs))*gasto_ACS + (1 - factor_electricidadcal(tipo_calefaccion))*gasto_CAL
+ 
 
-    ##############
-    zona_verano = zonaver(provincia, altitud)
-    zona_inv_local = zona_inv_localidad(provincia, altitud)
-    print(f"Zona inv localidad: {zona_inv_local}")
-    # Dentro de run_demo, después de zona_verano, C1_verano, etc.
-
-    print("\n=== DEPURACIÓN REFRIGERACIÓN ===")
-    print(f"Provincia: {provincia}, altitud: {altitud}")
-    print(f"zona_verano (string): '{zona_verano}'")
-    print(f"zona_inv_localidad: {zona_inv_localidad(provincia, altitud)}")
-
-    # Lee la tabla scv_referencia directamente para ver qué devuelve
-    zona_test = zona_inv_localidad(provincia, altitud)
-    row_test = lookup_row('scv_referencia', 'zona referencia', zona_test)
-    print(f"Fila encontrada para '{zona_test}': {row_test}")
-
-    # Obtén los valores de demanda_ref (según tipo vivienda)
-    if tipo_vivienda == 'bloque':
-        col_dem = 'DR nuevo bloque'
-    else:
-        col_dem = 'DR nuevo unif'
-
-    demanda_RefRef_raw = lookup_value('scv_referencia', row_test, col_dem)
-    print(f"Valor crudo de '{col_dem}': {demanda_RefRef_raw} (tipo: {type(demanda_RefRef_raw)})")
-    # Fuerza la conversión a float con coma
-    if isinstance(demanda_RefRef_raw, str):
-        demanda_RefRef = float(demanda_RefRef_raw.replace(',', '.'))
-    else:
-        demanda_RefRef = float(demanda_RefRef_raw)
-    print(f"demanda_RefRef convertido (kWh/m²): {demanda_RefRef}")
-
-    print(f"Io_Is_verano: {Io_Is_verano}")
-    demanda_CorregidaSignoRef = Io_Is_verano * demanda_RefRef * superficie * (ratio_supverano / 100.0)
-    print(f"demanda_CorregidaSignoRef: {demanda_CorregidaSignoRef}")
-
-    demanda_CorregidaRef = fdemanda_corregidacal(demanda_CorregidaSignoRef)
-    print(f"demanda_CorregidaRef: {demanda_CorregidaRef}")
-
-    print(f"SEER: {SEER}")
-    consumo_refrigeracion = demanda_CorregidaRef / SEER if SEER != 0 else 0
-    print(f"consumo_refrigeracion (kWh): {consumo_refrigeracion}")
-    print(f"C1_verano = {C1_verano}")
-    row_R = lookup_row('Dispersion R verano', 'Zona', zona_verano)
-    R = lookup_value('Dispersion R verano', row_R, tipo_vivienda)
-    print(f"R (de Dispersion R verano) = {R}")
-
-        # Imprimir desglose de consumo eléctrico no térmico
-    print("\n=== DESGLOSE CONSUMO ELÉCTRICO ===")
-    print(f"Consumo cocina: {consumo_aparato(cocina,'Cocina', miembros):.2f}")
-    print(f"Consumo horno: {consumo_aparato(horno,'Horno', miembros):.2f}")
-    print(f"Consumo lavadora: {consumo_aparato(lavadora,'Lavadora', miembros):.2f}")
-    print(f"Consumo secadora: {consumo_aparato(secadora,'Secadora', miembros):.2f}")
-    print(f"Consumo frigorífico: {consumo_aparato(frigorifico,'Frigorifico', miembros):.2f}")
-    print(f"Consumo congelador: {consumo_aparato(congelador,'Congelador', miembros):.2f}")
-    print(f"Consumo TV: {consumo_aparato(tv,'TV', miembros):.2f}")
-    print(f"Consumo ordenador: {consumo_aparato(ordenador,'Ordenador', miembros):.2f}")
-    print(f"Consumo lavavajillas: {consumo_aparato(lavavajillas,'Lavavajillas', miembros):.2f}")
-    print(f"Consumo móvil: {consumo_aparato(movil,'Movil', miembros):.2f}")
-    print(f"Consumo tablet: {consumo_aparato(tablet,'Tablet', miembros):.2f}")
-    print(f"Consumo microondas: {consumo_aparato(microondas,'Microondas', miembros):.2f}")
-    print(f"GEI (iluminación): {gei(provincia, Npax, superficie):.2f}")
-    print(f"Factores ocupación: {factores(n_ocupados, n_parados, n_estudiantes, n_jubilados, n_incapacitados, n_viudos, n_amas, n_otros, miembros):.2f}")
-    print(f"Energía eléctrica total (1.07 * (suma + factores)): {energia_electrica:.2f}")
-
-    # Depuración de factores (temporal)
-    Col_temp = columna(miembros)
-    f_occ = factor(n_ocupados, 'Ocupado', Col_temp)
-    f_par = factor(n_parados, 'Parado', Col_temp)
-    f_est = factor(n_estudiantes, 'Estudiante', Col_temp)
-    f_jub = factor(n_jubilados, 'Jubilado', Col_temp)
-    f_inc = factor(n_incapacitados, 'Incapacitado', Col_temp)
-    f_viu = factor(n_viudos, 'Viudo', Col_temp)
-    f_ama = factor(n_amas, 'Ama', Col_temp)
-    f_otr = factor(n_otros, 'Otro', Col_temp)
-    print(f"Factores individuales: Ocupado={f_occ}, Parado={f_par}, Estudiante={f_est}, Jubilado={f_jub}, Incapacitado={f_inc}, Viudo={f_viu}, Ama={f_ama}, Otro={f_otr}")
-    print(f"Suma factores = {f_occ+f_par+f_est+f_jub+f_inc+f_viu+f_ama+f_otr}")
-    
    ##############################
     return {
             # Demandas
