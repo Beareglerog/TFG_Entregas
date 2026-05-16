@@ -23,7 +23,6 @@ def zona_climatica(provincia, altitud):
 
 # Indice + 3 porque las primeras 3 columnas no son localizaciones (titulo, espacio, provincia)
         zona = lookup_value('zonas', row, indice + 3)
-        print(f"Provincia: {provincia}, Altitud: {altitud}, Índice bruto: {indice_bruto}, Índice: {indice}, Zona climática: {zona}")
     else:
         zona = lookup_value('zonas', row, 3)
 
@@ -412,7 +411,6 @@ def io_is_verano(zona_verano, tipo_vivienda, C1):
 def calcula_c1(califE, zona_invierno, tipo_vivienda):
     
     zona_invierno = str(zona_invierno)
-    print ("zona invierno: " + zona_invierno)  
 
     if tipo_vivienda == 'bloque':
         row = lookup_row('C1_bloque', 'zona', zona_invierno)
@@ -431,7 +429,6 @@ def calcula_c1_verano(califE, zona_verano, tipo_vivienda):
         calcula_c1_verano = -1
     elif tipo_vivienda == 'bloque':
         row = lookup_row('C1_bloque_verano', 'zona', zona_verano)
-        print("row: " + str(row))
         calcula_c1_verano = lookup_value('C1_bloque_verano', row, califE)
     else:
         row = lookup_row('C1_unifamiliar_verano', 'zona', zona_verano)
@@ -502,14 +499,10 @@ def gesin(nombre_aparato, miembros):
         row_cme = lookup_row('CMECon', 0, nombre_aparato)
         val_cme = lookup_value('CMECon', row_cme, Col)
         val_cme_float = float(str(val_cme).replace(",", "."))
-        print(f"  CMECon raw: {val_cme} -> float: {val_cme_float}")
-        
         row_pen = lookup_row('Penetracion', 0, nombre_aparato)
         val_pen = lookup_value('Penetracion', row_pen, 2)
         val_pen_float = float(str(val_pen).replace(",", "."))
-        print(f"  Penetracion raw: {val_pen} -> float: {val_pen_float}")
         gesin = val_cme_float / val_pen_float
-        print(f"  Resultado gesin = {gesin}")
         gesin = float(str(lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col)).replace(",", ".")) / float(str(lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)).replace(",", "."))
     
     else:
@@ -517,7 +510,6 @@ def gesin(nombre_aparato, miembros):
         row_cme = lookup_row('CMESin', 0, nombre_aparato)
         val = lookup_value('CMESin', row_cme, Col)
         gesin = float(str(val).replace(",", "."))
-        print(f"  CMESin raw: {val} -> float: {gesin}")
     
     return gesin
 
@@ -669,7 +661,6 @@ def factor(ocupacion, nombre_ocupacion, Col):
             factor = ama(ocupacion, Col) 
         case _:
             factor = otro(ocupacion,Col) 
-    print("factor " + nombre_ocupacion + ": " + str(factor))
     return factor
 
 # Funcion para determinar la suma de todos los factores
@@ -677,7 +668,6 @@ def factor(ocupacion, nombre_ocupacion, Col):
 def factores(ocupado, parado, estudiante, jubilado, incapacitado, viudo, ama, otro, miembros):
     Col = columna(miembros) 
     factores = factor(ocupado, 'Ocupado', Col) +factor(parado,'Parado', Col) + factor(estudiante, 'Estudiante', Col) + factor(jubilado, 'Jubilado', Col) + factor(incapacitado, 'Incapacitado', Col) + factor(viudo, 'Viudo', Col) + factor(ama, 'Ama', Col) + factor(otro, 'Otro', Col) 
-    print("factores: " + str(factores))
     return factores
  
 

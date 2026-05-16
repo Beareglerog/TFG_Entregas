@@ -257,9 +257,9 @@ def panel_close():
 
 
 # ============================================================
-# APP PRINCIPAL
+# PÁGINA DE SIMULACIÓN (entrada de datos)
 # ============================================================
-def main():
+def pagina_simulacion():
     st.title("Simulador de Demanda Energética")
     st.markdown("---")
 
@@ -310,7 +310,7 @@ def main():
 
 
     # ---------------------------------------------------------
-    # Instalaciones térmicas: calefacción + ACS
+    # INSTALACIONES TÉRMICAS: calefacción + ACS
     # ---------------------------------------------------------
     with tab_term:
         st.markdown(
@@ -346,7 +346,7 @@ def main():
 
     
     # ---------------------------------------------------------
-    # Instalaciones eléctricas
+    # INSTALACIONES ELÉCTRICAS
     # ---------------------------------------------------------
     with tab_elec:
         panel_open("INSTALACIONES ELÉCTRICAS", "tag-pink")
@@ -400,114 +400,123 @@ def main():
     # ============================================================
     st.markdown("---")
     if st.button("EJECUTAR SIMULACIÓN", use_container_width=True):
-
-        # RECOJO INPUTS
-
+        # Recoger todos los inputs
         inputs = {
-
-         # De tab_ppal
-        'provincia': st.session_state.prov,
-        'altitud': st.session_state.alt,
-        'calificacion': st.session_state.ano,
-        'tipo_vivienda': st.session_state.tipo_viv,
-        'habitantes': st.session_state.habitantes,
-        'superficie': st.session_state.dim,
-        'area_climatizada': st.session_state.area_clim,
-        
-        # De tab_activa ###########cambiar
-        'sistema_calefaccion': st.session_state.sistema_cal,
-        'inst_calefaccion': st.session_state.inst_cal,
-        'sistema_acs': st.session_state.sistema_acs,
-        'inst_acs': st.session_state.inst_acs,
-        
-        # De tab_elec ############cambiar
-        'e_cocina': st.session_state.e_cocina,
-        'e_horno': st.session_state.e_horno,
-        'e_micro': st.session_state.e_micro,
-        'e_lavavaj': st.session_state.e_lavavaj,
-        'e_frigo': st.session_state.e_frigo,
-        'e_cong': st.session_state.e_cong,
-        'e_lav': st.session_state.e_lav,
-        'e_sec': st.session_state.e_sec,
-        'e_tv': st.session_state.e_tv,
-        'e_pc': st.session_state.e_pc,
-        'e_mov': st.session_state.e_mov,
-        'e_tab': st.session_state.e_tab,
-
-        # de tab_ocupaciones
-        'ocupados': st.session_state.ocupados,
-        'parados': st.session_state.parados,
-        'estudiantes': st.session_state.estudiantes,
-        'jubilados': st.session_state.jubilados,
-        'incapacitados': st.session_state.incapacitados,
-        'viudos': st.session_state.viudos,
-        'amas_casa': st.session_state.amas_casa,
-        'otros': st.session_state.otros
-
+            'provincia': st.session_state.prov,
+            'altitud': st.session_state.alt,
+            'calificacion': st.session_state.ano,
+            'tipo_vivienda': st.session_state.tipo_viv,
+            'habitantes': st.session_state.habitantes,
+            'superficie': st.session_state.dim,
+            'area_climatizada': st.session_state.area_clim,
+            'sistema_calefaccion': st.session_state.sistema_cal,
+            'inst_calefaccion': st.session_state.inst_cal,
+            'sistema_acs': st.session_state.sistema_acs,
+            'inst_acs': st.session_state.inst_acs,
+            'e_cocina': st.session_state.e_cocina,
+            'e_horno': st.session_state.e_horno,
+            'e_micro': st.session_state.e_micro,
+            'e_lavavaj': st.session_state.e_lavavaj,
+            'e_frigo': st.session_state.e_frigo,
+            'e_cong': st.session_state.e_cong,
+            'e_lav': st.session_state.e_lav,
+            'e_sec': st.session_state.e_sec,
+            'e_tv': st.session_state.e_tv,
+            'e_pc': st.session_state.e_pc,
+            'e_mov': st.session_state.e_mov,
+            'e_tab': st.session_state.e_tab,
+            'ocupados': st.session_state.ocupados,
+            'parados': st.session_state.parados,
+            'estudiantes': st.session_state.estudiantes,
+            'jubilados': st.session_state.jubilados,
+            'incapacitados': st.session_state.incapacitados,
+            'viudos': st.session_state.viudos,
+            'amas_casa': st.session_state.amas_casa,
+            'otros': st.session_state.otros
         }
-
-        
-
-        #print("Imprimiendo inputs recogidos:")
-        #for key, value in inputs.items():
-            #print(f"{key}: {value}")
-
         resultados = run_demo(inputs)
-        print("imprimiendo resultados calculados:")
-        for key, value in resultados.items():
-            print(f"{key}: {value}")
+        st.session_state.resultados = resultados
+        # Cambiar a la página de resultados
+        st.query_params["page"] = "resultados"
+        st.rerun()
+    
+# ============================================================
+# PÁGINA DE RESULTADOS (muestra los datos guardados)
+# ============================================================
 
-        # MOSTRAR RESULTADOS
-        st.header("Resultados Anuales de Demanda y Gasto")
-        st.markdown("---")
+def pagina_resultados():
+    st.header("Resultados Anuales de Consumo, Demanda y Gasto")
+    st.markdown("---")
 
-        col_out1, col_out2, col_out3 = st.columns([1, 1, 1])
+    # Comprobar si hay resultados guardados
+    if "resultados" not in st.session_state:
+        st.warning("No hay resultados. Por favor, ejecuta una simulación primero.")
+        if st.button("Ir a simulación"):
+            st.query_params["page"] = "simulacion"
+            st.rerun()
+        return
 
-        with col_out1:
-            st.subheader("DEMANDA ENERGÉTICA ANUAL (kWh)")
-            st.markdown(
-                f"""
-                <div class="caja-demand">
-                    <h4>CALEFACCIÓN <span class="num-right">{resultados['demanda_CorregidaCal']:.0f} kWh</span></h4>
-                    <h4>REFRIGERACIÓN <span class="num-right">{resultados['demanda_CorregidaRef']:.0f} kWh</span></h4>
-                    <h4>ACS <span class="num-right">{resultados['demanda_ACS']:.0f} kWh</span></h4>
-                    <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.0f} kWh</span></h4>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+    resultados = st.session_state.resultados
 
-        with col_out2:
-            st.subheader("GASTO ANUAL (€)")
-            st.markdown(
-                f"""
-                <div class="caja-cost">
-                    <h4>GASTO EN CALEFACCIÓN <span class="num-right">€ {resultados['gasto_CAL']:.2f}</span></h4>
-                    <h4>GASTO EN ACS <span class="num-right">€ {resultados['gasto_ACS']:.2f}</span></h4>
-                    <h4>GASTO EN REFRIGERACIÓN <span class="num-right">€ {resultados['gasto_REFRIGERACION']:.2f}</span></h4>
-                    <h4>GASTO EN COMBUSTIBLES <span class="num-right">€ {resultados['gasto_COMBUSTIBLE']:.2f}</span></h4>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+    # MOSTRAR RESULTADOS (exactamente igual que en tu código)
+    col_out1, col_out2, col_out3 = st.columns([1, 1, 1])
 
-        with col_out3:
-            st.subheader("CONSUMO ANUAL (kWh)")
-            st.markdown(
-                f"""
-                <div class="caja-consumo">
-                    <h4>CONSUMO DE CALEFACCIÓN <span class="num-right">{resultados['consumo_calefaccion']:.0f} kWh</span></h4>
-                    <h4>CONSUMO DE ACS <span class="num-right">{resultados['consumo_ACS']:.0f} kWh</span></h4>
-                    <h4>CONSUMO DE REFRIGERACIÓN <span class="num-right">{resultados['consumo_refrigeracion']:.0f} kWh</span></h4>
-                    <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.0f} kWh</span></h4>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+    with col_out1:
+        st.subheader("DEMANDA ENERGÉTICA ANUAL (kWh)")
+        st.markdown(
+            f"""
+            <div class="caja-demand">
+                <h4>CALEFACCIÓN <span class="num-right">{resultados['demanda_CorregidaCal']:.2f} kWh</span></h4>
+                <h4>REFRIGERACIÓN <span class="num-right">{resultados['demanda_CorregidaRef']:.2f} kWh</span></h4>
+                <h4>ACS <span class="num-right">{resultados['demanda_ACS']:.2f} kWh</span></h4>
+                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.2f} kWh</span></h4>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-        
+    with col_out2:
+        st.subheader("GASTO ANUAL (€)")
+        st.markdown(
+            f"""
+            <div class="caja-cost">
+                <h4>GASTO EN CALEFACCIÓN <span class="num-right">€ {resultados['gasto_CAL']:.2f}</span></h4>
+                <h4>GASTO EN ACS <span class="num-right">€ {resultados['gasto_ACS']:.2f}</span></h4>
+                <h4>GASTO EN REFRIGERACIÓN <span class="num-right">€ {resultados['gasto_REFRIGERACION']:.2f}</span></h4>
+                <h4>GASTO EN COMBUSTIBLES <span class="num-right">€ {resultados['gasto_COMBUSTIBLE']:.2f}</span></h4>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-        st.toast("Simulación completada.")
+    with col_out3:
+        st.subheader("CONSUMO ANUAL (kWh)")
+        st.markdown(
+            f"""
+            <div class="caja-consumo">
+                <h4>CONSUMO DE CALEFACCIÓN <span class="num-right">{resultados['consumo_calefaccion']:.2f} kWh</span></h4>
+                <h4>CONSUMO DE ACS <span class="num-right">{resultados['consumo_ACS']:.2f} kWh</span></h4>
+                <h4>CONSUMO DE REFRIGERACIÓN <span class="num-right">{resultados['consumo_refrigeracion']:.2f} kWh</span></h4>
+                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.2f} kWh</span></h4>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    # Botón para volver a la simulación
+    if st.button("Nueva simulación", use_container_width=True):
+        # Opcional: limpiar resultados si quieres
+        # del st.session_state.resultados
+        st.query_params["page"] = "simulacion"
+        st.rerun()
+
+def main():
+    params = st.query_params
+    page = params.get("page", "simulacion")
+    if page == "resultados":
+        pagina_resultados()
+    else:
+        pagina_simulacion()
 
 if __name__ == "__main__":
     main()

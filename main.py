@@ -49,11 +49,6 @@ def run_demo(inputs):
     n_amas = inputs['amas_casa']
     n_otros = inputs['otros']
 
-
-    print("inputs recibidos:")
-    for key, value in inputs.items():
-        print(f"  {key}: {value}")
-
      # ACS
 
     B = np.zeros(13)  # creo el vector
