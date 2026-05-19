@@ -1,5 +1,8 @@
 import streamlit as st
 from main import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 st.set_page_config(
@@ -46,7 +49,7 @@ st.markdown(
     --------------------------- */
     html, body, [class*="st-emotion-"] {
         font-family: 'Merriweather', serif !important;
-        font-size: 1.0em;
+        font-size: 0.97em;
         color: #212529;
     }
 
@@ -434,7 +437,15 @@ def pagina_simulacion():
             'amas_casa': st.session_state.amas_casa,
             'otros': st.session_state.otros
         }
-        resultados = run_demo(inputs)
+        try:
+            resultados = run_demo(inputs)
+        except ValueError as e:
+            st.error(f"Los datos introducidos no han permitido completar el cálculo: {e}")
+            st.stop()
+        except Exception:
+            logger.exception("Fallo en run_demo")
+            st.error("Se ha producido un error al procesar los datos. Revísalos y vuelve a intentarlo.")
+            st.stop()
         st.session_state.resultados = resultados
         # Cambiar a la página de resultados
         st.query_params["page"] = "resultados"
@@ -466,10 +477,10 @@ def pagina_resultados():
         st.markdown(
             f"""
             <div class="caja-demand">
-                <h4>CALEFACCIÓN <span class="num-right">{resultados['demanda_CorregidaCal']:.2f} kWh</span></h4>
-                <h4>REFRIGERACIÓN <span class="num-right">{resultados['demanda_CorregidaRef']:.2f} kWh</span></h4>
-                <h4>ACS <span class="num-right">{resultados['demanda_ACS']:.2f} kWh</span></h4>
-                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.2f} kWh</span></h4>
+                <h4>CALEFACCIÓN <span class="num-right">{resultados['demanda_CorregidaCal']} kWh</span></h4>
+                <h4>REFRIGERACIÓN <span class="num-right">{resultados['demanda_CorregidaRef']} kWh</span></h4>
+                <h4>ACS <span class="num-right">{resultados['demanda_ACS']} kWh</span></h4>
+                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']} kWh</span></h4>
             </div>
             """,
             unsafe_allow_html=True
@@ -494,10 +505,10 @@ def pagina_resultados():
         st.markdown(
             f"""
             <div class="caja-consumo">
-                <h4>CONSUMO DE CALEFACCIÓN <span class="num-right">{resultados['consumo_calefaccion']:.2f} kWh</span></h4>
-                <h4>CONSUMO DE ACS <span class="num-right">{resultados['consumo_ACS']:.2f} kWh</span></h4>
-                <h4>CONSUMO DE REFRIGERACIÓN <span class="num-right">{resultados['consumo_refrigeracion']:.2f} kWh</span></h4>
-                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.2f} kWh</span></h4>
+                <h4>CONSUMO DE CALEFACCIÓN <span class="num-right">{resultados['consumo_calefaccion']} kWh</span></h4>
+                <h4>CONSUMO DE ACS <span class="num-right">{resultados['consumo_ACS']} kWh</span></h4>
+                <h4>CONSUMO DE REFRIGERACIÓN <span class="num-right">{resultados['consumo_refrigeracion']} kWh</span></h4>
+                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']} kWh</span></h4>
             </div>
             """,
             unsafe_allow_html=True

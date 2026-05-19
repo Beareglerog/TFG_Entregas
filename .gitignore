@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Excel temporales
+~$*
+
+# macOS
+.DS_Store
+__MACOSX/
+
+# Empaquetado
+*.zip
+
+# Editor
+.vscode/
+.idea/
+
+# Streamlit (nunca commitear secretos)
+.streamlit/secrets.toml
