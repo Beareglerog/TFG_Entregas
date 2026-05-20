@@ -143,7 +143,6 @@ def alquiler_equipos(tipo_calefaccion):
         # en la tabla solo hay un valor para €/mes
         alquiler_equipos = lookup_value('alquiler equipos', 1, 'coste')  # €/mes, incluye canon IRC
     else:
-        # no entiendo pq es 0
         alquiler_equipos = 0  # electricidad en luz
     return alquiler_equipos
 
@@ -171,7 +170,6 @@ def impuesto_electricidad(tipo):
     return impuesto_electricidad
 
 def coste_fijocalreparto(tipo_calefaccion, inst_calefaccion, coste_fijoCAL):
-    # de donde sale coste_fijoCAL??????????????????????????????
     if tipo_calefaccion == 'gas natural':
         if inst_calefaccion == 'central':
             coste_fijocalreparto = 0

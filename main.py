@@ -69,7 +69,6 @@ def run_demo(inputs):
     litros_paxACS = litros_acs(tipo_vivienda) 
     demanda_ACS = Npax * litros_paxACS * (365/12) * 4.176 * (12*60 - np.sum(temperatura_AguaRed[1:13])) / 3600
     tabla_ACSspf = tabla_acsspf(califE) #0.7679 
-    ###### calcula mal demanda_ACS
     tabla_ACSspf = tabla_acsspf(califE) 
     fila_ACS_SPF = lookup_row(tabla_ACSspf,'sistema',tipo_acs) 
     ACS_SPF = float(str(lookup_value(tabla_ACSspf, fila_ACS_SPF, inst_acs)).replace(",", ".")) 
@@ -119,7 +118,6 @@ def run_demo(inputs):
     # ======================
     consumo_acs = demanda_ACS / ACS_SPF
     consumo_gnCAL = consumo_gas(tipo_calefaccion, tipo_acs, consumo_calefaccion, consumo_acs, inst_calefaccion, inst_acs, 'calefaccion') 
-    ###########calcula mal el coste
     coste_fijoCAL = tarifa_suministro(inst_calefaccion, tipo_calefaccion, consumo_gnCAL, 'fijo', provincia, zona_invierno, pot_contratada_punta_sinREF, pot_contratada_valle_sinREF) 
     coste_fijoCALreparto = coste_fijocalreparto(tipo_calefaccion, inst_calefaccion, coste_fijoCAL) 
     coste_variableCAL = tarifa_suministro(inst_calefaccion, tipo_calefaccion, consumo_gnCAL, 'variable', provincia, zona_invierno, pot_contratada_punta_sinREF, pot_contratada_valle_sinREF) 
