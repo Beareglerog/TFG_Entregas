@@ -5,9 +5,6 @@ import math
 from help import *
 
 
-DATA_DIR = "data/Lookup_Tables"
-tables = {}
-
 def zona_climatica(provincia, altitud):
 
     row = lookup_row('zonas', 'Provincia', provincia)

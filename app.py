@@ -212,7 +212,7 @@ st.markdown(
     margin: 6px 0;
     font-weight: 700;
     color: #374151;
-    font-size: 1.05em;
+    font-size: 1.25em;
     }
 
     .num-right {
@@ -265,6 +265,13 @@ def panel_close():
 def pagina_simulacion():
     st.title("Simulador de Demanda Energética")
     st.markdown("---")
+
+    st.info(
+    "**Privacidad:** Esta herramienta no almacena ni transmite a terceros "
+    "los datos que introduces. Los cálculos se realizan únicamente durante tu sesión "
+    "y se pierden al cerrar el navegador. "
+    "Responsable del tratamiento: Universidad Pontificia Comillas."
+)
 
     # PESTAÑAS AGRUPADAS
     tab_general, tab_edificio, tab_term, tab_elec, tab_ocup = st.tabs([
@@ -477,10 +484,10 @@ def pagina_resultados():
         st.markdown(
             f"""
             <div class="caja-demand">
-                <h4>CALEFACCIÓN <span class="num-right">{resultados['demanda_CorregidaCal']} kWh</span></h4>
-                <h4>REFRIGERACIÓN <span class="num-right">{resultados['demanda_CorregidaRef']} kWh</span></h4>
-                <h4>ACS <span class="num-right">{resultados['demanda_ACS']} kWh</span></h4>
-                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']} kWh</span></h4>
+                <h4>CALEFACCIÓN <span class="num-right">{resultados['demanda_CorregidaCal']:.0f} kWh</span></h4>
+                <h4>REFRIGERACIÓN <span class="num-right">{resultados['demanda_CorregidaRef']:.0f} kWh</span></h4>
+                <h4>ACS <span class="num-right">{resultados['demanda_ACS']:.0f} kWh</span></h4>
+                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.0f} kWh</span></h4>
             </div>
             """,
             unsafe_allow_html=True
@@ -505,10 +512,10 @@ def pagina_resultados():
         st.markdown(
             f"""
             <div class="caja-consumo">
-                <h4>CONSUMO DE CALEFACCIÓN <span class="num-right">{resultados['consumo_calefaccion']} kWh</span></h4>
-                <h4>CONSUMO DE ACS <span class="num-right">{resultados['consumo_ACS']} kWh</span></h4>
-                <h4>CONSUMO DE REFRIGERACIÓN <span class="num-right">{resultados['consumo_refrigeracion']} kWh</span></h4>
-                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']} kWh</span></h4>
+                <h4>CONSUMO DE CALEFACCIÓN <span class="num-right">{resultados['consumo_calefaccion']:.0f} kWh</span></h4>
+                <h4>CONSUMO DE ACS <span class="num-right">{resultados['consumo_ACS']:.0f} kWh</span></h4>
+                <h4>CONSUMO DE REFRIGERACIÓN <span class="num-right">{resultados['consumo_refrigeracion']:.0f} kWh</span></h4>
+                <h4>ELECTRICIDAD (NO TÉRMICA) <span class="num-right">{resultados['energia_electrica']:.0f} kWh</span></h4>
             </div>
             """,
             unsafe_allow_html=True
@@ -521,9 +528,14 @@ def pagina_resultados():
         st.query_params["page"] = "simulacion"
         st.rerun()
 
+# Solo hay dos páginas válidas en la app. Si alguien manipula la URL
+# con un valor raro (ej: ?page=admin), lo ignoramos y mandamos al inicio.
+VALID_PAGES = {"simulacion", "resultados"}
+
 def main():
-    params = st.query_params
-    page = params.get("page", "simulacion")
+    page = st.query_params.get("page", "simulacion")
+    if page not in VALID_PAGES:
+        page = "simulacion"
     if page == "resultados":
         pagina_resultados()
     else:
