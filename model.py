@@ -486,7 +486,14 @@ def columna(miembros):
     else:  # 'Mas de 4'
         return 6
 
-
+def convierte_aparato(val):
+    if val == "Sí":
+        return True
+    elif val == "No":
+        return False
+    else:
+        return 'NS/NC'
+    
 #Funcion para calculo de gasto electrico de cada aparato
 def gesin(nombre_aparato, miembros):
     Col = columna(miembros)

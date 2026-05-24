@@ -26,18 +26,18 @@ def run_demo(inputs):
     inst_acs = inputs['inst_acs'].lower()
     
     # Equipos eléctricos
-    cocina = inputs['e_cocina']
-    horno = inputs['e_horno']
-    microondas = inputs['e_micro']
-    lavavajillas = inputs['e_lavavaj']
-    frigorifico = inputs['e_frigo']
-    congelador = inputs['e_cong']
-    lavadora = inputs['e_lav']
-    secadora = inputs['e_sec']
-    tv = inputs['e_tv']
-    ordenador = inputs['e_pc']
-    movil = inputs['e_mov']
-    tablet = inputs['e_tab']
+    cocina = convierte_aparato(inputs['e_cocina'])
+    horno = convierte_aparato(inputs['e_horno'])
+    microondas = convierte_aparato(inputs['e_micro'])
+    lavavajillas = convierte_aparato(inputs['e_lavavaj'])
+    frigorifico = convierte_aparato(inputs['e_frigo'])
+    congelador = convierte_aparato(inputs['e_cong'])
+    lavadora = convierte_aparato(inputs['e_lav'])
+    secadora = convierte_aparato(inputs['e_sec'])
+    tv = convierte_aparato(inputs['e_tv'])
+    ordenador = convierte_aparato(inputs['e_pc'])
+    movil = convierte_aparato(inputs['e_mov'])
+    tablet = convierte_aparato(inputs['e_tab'])
 
     #Ocupaciones
     n_ocupados = inputs['ocupados']

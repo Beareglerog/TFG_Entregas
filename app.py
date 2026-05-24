@@ -363,23 +363,25 @@ def pagina_simulacion():
 
         e1, e2, e3, e4, e5 = st.columns([1.1, 0.9, 1.1, 0.9, 1.1])
 
+        opciones = ["No", "Sí", "NS/NC"]
+
         with e1:
-                st.checkbox("Cocina", key="e_cocina")
-                st.checkbox("Horno", key="e_horno")
-                st.checkbox("Microondas", key="e_micro")
-                st.checkbox("Lavavajillas", key="e_lavavaj")
+                st.selectbox("Cocina", opciones, key="e_cocina")
+                st.selectbox("Horno", opciones, key="e_horno")
+                st.selectbox("Microondas", opciones, key="e_micro")
+                st.selectbox("Lavavajillas", opciones, key="e_lavavaj")
 
         with e3:
-                st.checkbox("Frigorífico", key="e_frigo")
-                st.checkbox("Congelador", key="e_cong")
-                st.checkbox("Lavadora", key="e_lav")
-                st.checkbox("Secadora", key="e_sec")
+                st.selectbox("Frigorífico", opciones, key="e_frigo")
+                st.selectbox("Congelador", opciones, key="e_cong")
+                st.selectbox("Lavadora", opciones, key="e_lav")
+                st.selectbox("Secadora", opciones, key="e_sec")
 
         with e5:
-                st.checkbox("Televisión", key="e_tv")
-                st.checkbox("Ordenador", key="e_pc")
-                st.checkbox("Móvil", key="e_mov")
-                st.checkbox("Tablet", key="e_tab")
+                st.selectbox("Televisión", opciones, key="e_tv")
+                st.selectbox("Ordenador", opciones, key="e_pc")
+                st.selectbox("Móvil", opciones, key="e_mov")
+                st.selectbox("Tablet", opciones, key="e_tab")
 
         panel_close()
 
