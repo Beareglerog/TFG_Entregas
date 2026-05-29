@@ -59,7 +59,7 @@ def demanda_referenciacalefaccion(provincia, altitud, tipo_vivienda):
     if (tipo_vivienda == 'bloque'):
         demanda_referenciacalefaccion = lookup_value('sci_referencia', row, 'DR nuevo bloque')
     else:
-        demanda_referenciacalefaccion = lookup_value('sci_referencia', row, 'DR nueva vivienda')
+        demanda_referenciacalefaccion = lookup_value('sci_referencia', row, 'DR nuevo unif')
     
     return demanda_referenciacalefaccion
 
@@ -299,18 +299,18 @@ def tarifa_suministro(inst_termica, tipo_instalacion, consumo_gn, termino,
     # --- Eléctrico ---
     # que es lo de fijo y variable y punta y valle?????????????
     if termino == "fijo":
-        fijo_punta = lookup_value("pvpc", 1, "fijo")
-        fijo_valle = lookup_value("pvpc", 2, "fijo")
+        fijo_punta = float(str(lookup_value("pvpc", 1, "fijo")).replace(",", "."))
+        fijo_valle = float(str(lookup_value("pvpc", 2, "fijo")).replace(",", "."))
         return (fijo_punta * potencia_punta + fijo_valle * potencia_valle) / potencia_punta
 
-    variable_punta = lookup_value("pvpc", 1, "variable")
-    variable_valle = lookup_value("pvpc", 2, "variable")
-    variable_llano = lookup_value("pvpc", 3, "variable")
+    variable_punta = float(str(lookup_value("pvpc", 1, "variable")).replace(",", "."))
+    variable_valle = float(str(lookup_value("pvpc", 2, "variable")).replace(",", "."))
+    variable_llano = float(str(lookup_value("pvpc", 3, "variable")).replace(",", "."))
 
     fila_pesos = lookup_row("pesos tarifa electrica", 1, zona_invierno)
-    peso_punta = lookup_value("pesos tarifa electrica", fila_pesos, "peso_punta")
-    peso_valle = lookup_value("pesos tarifa electrica", fila_pesos, "peso_valle")
-    peso_llano = lookup_value("pesos tarifa electrica", fila_pesos, "peso_llano")
+    peso_punta = float(str(lookup_value("pesos tarifa electrica", fila_pesos, "peso_punta")).replace(",", "."))
+    peso_valle = float(str(lookup_value("pesos tarifa electrica", fila_pesos, "peso_valle")).replace(",", "."))
+    peso_llano = float(str(lookup_value("pesos tarifa electrica", fila_pesos, "peso_llano")).replace(",", "."))
 
     if tipo_instalacion == "electricidad (acumuladores)":
         return variable_valle
@@ -560,7 +560,7 @@ def consumo_electrico(cocina, horno, lavadora, secadora, frigorifico, congelador
     return consumo_electrico
 
 #Funciones para determinar miembros con el mismo trabajo
-def ocupado(ocupacion, Col):
+def trabajo(ocupacion, Col):
     match ocupacion:
         case 0:
             return 0
@@ -576,7 +576,7 @@ def ocupado(ocupacion, Col):
         case _:
             raise ValueError(f"Valor no válido: {ocupacion}")
 
-def parado(ocupacion, Col):
+def desempleo(ocupacion, Col):
     match ocupacion:
         case 0:
             return 0
@@ -611,7 +611,7 @@ def jubilado(ocupacion, Col):
             return lookup_value('Factores', fila, Col)
 
 
-def incapacitado(ocupacion, Col):
+def discapacidad(ocupacion, Col):
     match ocupacion:
         case 0:
             return 0
@@ -619,7 +619,7 @@ def incapacitado(ocupacion, Col):
             fila = lookup_row('Factores', 'Clase', 'Pe1')
             return lookup_value('Factores', fila, Col)
 
-def viudo(ocupacion, Col):
+def viudedad(ocupacion, Col):
     match ocupacion:
         case 0:
             return 0
@@ -627,7 +627,7 @@ def viudo(ocupacion, Col):
             fila = lookup_row('Factores', 'Clase', 'Pe2')
             return lookup_value('Factores', fila, Col)
 
-def ama(ocupacion, Col):
+def tareas_hogar(ocupacion, Col):
     match ocupacion:
         case 0:
             return 0
@@ -647,29 +647,29 @@ def otro(ocupacion, Col):
 
 def factor(ocupacion, nombre_ocupacion, Col): 
     match nombre_ocupacion:
-        case'Ocupado': 
-            factor = ocupado(ocupacion,Col) 
-        case'Parado':
-            factor = parado(ocupacion, Col) 
+        case'Trabajo activo': 
+            factor = trabajo(ocupacion,Col) 
+        case'Desempleo':
+            factor = desempleo(ocupacion, Col) 
         case 'Estudiante':
             factor = estudiante(ocupacion,Col) 
-        case 'Jubilado':
+        case 'Jubilación':
             factor = jubilado(ocupacion,Col) 
-        case'Incapacitado':
-            factor = incapacitado(ocupacion,Col) 
-        case'Viudo':
-            factor = viudo(ocupacion,Col) 
-        case'Ama':
-            factor = ama(ocupacion, Col) 
+        case'Discapacidad/Dependencia':
+            factor = discapacidad(ocupacion,Col) 
+        case'Viudedad':
+            factor = viudedad(ocupacion,Col) 
+        case'Tareas del hogar/Cuidados':
+            factor = tareas_hogar(ocupacion, Col) 
         case _:
             factor = otro(ocupacion,Col) 
     return factor
 
 # Funcion para determinar la suma de todos los factores
 
-def factores(ocupado, parado, estudiante, jubilado, incapacitado, viudo, ama, otro, miembros):
+def factores(trabajo, desempleo, estudiante, jubilacion, discapacidad, viudedad, tareas_hogar, otro, miembros):
     Col = columna(miembros) 
-    factores = factor(ocupado, 'Ocupado', Col) +factor(parado,'Parado', Col) + factor(estudiante, 'Estudiante', Col) + factor(jubilado, 'Jubilado', Col) + factor(incapacitado, 'Incapacitado', Col) + factor(viudo, 'Viudo', Col) + factor(ama, 'Ama', Col) + factor(otro, 'Otro', Col) 
+    factores = factor(trabajo, 'Trabajo activo', Col) +factor(desempleo,'Desempleo', Col) + factor(estudiante, 'Estudiante', Col) + factor(jubilacion, 'Jubilación', Col) + factor(discapacidad, 'Discapacidad/Dependencia', Col) + factor(viudedad, 'Viudedad', Col) + factor(tareas_hogar, 'Tareas del hogar/Cuidados', Col) + factor(otro, 'Otro', Col) 
     return factores
  
 

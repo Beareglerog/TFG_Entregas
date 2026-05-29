@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 st.set_page_config(
     layout="wide",
-    page_title="TFG – Simulador Energético (EES → Python)"
+    page_title="DIAGNOSTICO"
 )
 
 # ============================================================
@@ -263,7 +263,7 @@ def panel_close():
 # PÁGINA DE SIMULACIÓN (entrada de datos)
 # ============================================================
 def pagina_simulacion():
-    st.title("Simulador de Demanda Energética")
+    st.title("DIAGNÓSTICO")
     st.markdown("---")
 
     st.info(
@@ -279,7 +279,7 @@ def pagina_simulacion():
         "Edificio",
         "Instalaciones Térmicas",
         "Instalaciones Eléctricas",
-        "Ocupación"
+        "Perfil del ocupante"
     ])
 
     # ---------------------------------------------------------
@@ -305,15 +305,15 @@ def pagina_simulacion():
         c1, c_space, c2 = st.columns([1.2, 0.05, 1.2])
 
         with c1:
-            panel_open("DEFINICIÓN DE EDIFICIO", "tag-blue")
+            panel_open("DEFINICIÓN DE VIVIENDA", "tag-blue")
             st.selectbox("Antigüedad/calificación energética", ANOS_CONSTRUCCION_CALIFE, key="ano")
             st.selectbox("Tipo de vivienda", TIPOS_VIVIENDA, key="tipo_viv")
 
         with c2:
             panel_open("OCUPACIÓN Y TAMAÑO", "tag-green")
 
-            st.number_input("Número de habitantes (ocupación)", min_value=1, value=3, key="habitantes")
-            st.number_input("Espacio (m^2)", min_value=0, value=100, step=10, key="dim")
+            st.number_input("Número de habitantes", min_value=1, value=3, key="habitantes")
+            st.number_input("Tamaño (m²)", min_value=0, value=100, step=10, key="dim")
             st.number_input("Área climatizada en verano (%)", min_value=0, max_value=100, value=100, step=1, key="area_clim")
 
         panel_close()
@@ -341,7 +341,7 @@ def pagina_simulacion():
             cal1, cal_sapce, cal2 = st.columns([1.2, 0.05, 1.2])
 
             with cal1:
-                st.selectbox("Equipo calefacción", SISTEMAS_CALEFACCION, key="sistema_cal")
+                st.selectbox("Fuente de calefacción", SISTEMAS_CALEFACCION, key="sistema_cal")
             with cal2:
                 st.selectbox("Tipo instalación calefacción", TIPOS_INSTALACION_CAL, key="inst_cal")
         with act2:
@@ -349,7 +349,7 @@ def pagina_simulacion():
             ac1, ac_space, ac2 = st.columns([1.2, 0.05, 1.2])
                 
             with ac1:
-                st.selectbox("Equipo ACS", SISTEMAS_ACS, key="sistema_acs")
+                st.selectbox("Fuente de ACS", SISTEMAS_ACS, key="sistema_acs")
             with ac2:
                 st.selectbox("Tipo instalación ACS", TIPOS_INSTALACION_ACS, key="inst_acs")
         panel_close()
@@ -367,20 +367,20 @@ def pagina_simulacion():
 
         with e1:
                 st.selectbox("Cocina", opciones, key="e_cocina")
+                st.selectbox("Congelador", opciones, key="e_cong")
+                st.selectbox("Frigorífico", opciones, key="e_frigo")
                 st.selectbox("Horno", opciones, key="e_horno")
-                st.selectbox("Microondas", opciones, key="e_micro")
-                st.selectbox("Lavavajillas", opciones, key="e_lavavaj")
 
         with e3:
-                st.selectbox("Frigorífico", opciones, key="e_frigo")
-                st.selectbox("Congelador", opciones, key="e_cong")
                 st.selectbox("Lavadora", opciones, key="e_lav")
+                st.selectbox("Lavavajillas", opciones, key="e_lavavaj")
+                st.selectbox("Microondas", opciones, key="e_micro")
                 st.selectbox("Secadora", opciones, key="e_sec")
 
         with e5:
-                st.selectbox("Televisión", opciones, key="e_tv")
-                st.selectbox("Ordenador", opciones, key="e_pc")
                 st.selectbox("Móvil", opciones, key="e_mov")
+                st.selectbox("Ordenador", opciones, key="e_pc")
+                st.selectbox("Televisión", opciones, key="e_tv")
                 st.selectbox("Tablet", opciones, key="e_tab")
 
         panel_close()
@@ -389,20 +389,20 @@ def pagina_simulacion():
     # OCUPACIONES
     # ---------------------------------------------------------
     with tab_ocup:
-        panel_open("OCUPACIONES", "tag-indigo")
+        panel_open("PERFILE DEL OCUPANTE", "tag-indigo")
 
         e1, e2, e3 = st.columns([1, 0.2, 1])
 
         with e1:
-            st.number_input("Ocupados", min_value=0, value=0, key="ocupados")
-            st.number_input("Parados", min_value=0, value=0, key="parados")
+            st.number_input("Trabajo activo", min_value=0, value=0, key="ocupados")
+            st.number_input("Desempleo", min_value=0, value=0, key="parados")
             st.number_input("Estudiantes", min_value=0, value=0, key="estudiantes")
-            st.number_input("Jubilados", min_value=0, value=0, key="jubilados")
+            st.number_input("Jubilación", min_value=0, value=0, key="jubilados")
 
         with e3:
-           st.number_input("Incapacitados", min_value=0, value=0, key="incapacitados")
-           st.number_input("Viudos", min_value=0, value=0, key="viudos")
-           st.number_input("Amas de Casa", min_value=0, value=0, key="amas_casa")
+           st.number_input("Discapacidad/Dependencia", min_value=0, value=0, key="incapacitados")
+           st.number_input("Viudedad", min_value=0, value=0, key="viudos")
+           st.number_input("Tareas del hogar/Cuidados", min_value=0, value=0, key="amas_casa")
            st.number_input("Otros", min_value=0, value=0, key="otros")
 
         panel_close()
@@ -525,8 +525,6 @@ def pagina_resultados():
 
     # Botón para volver a la simulación
     if st.button("Nueva simulación", use_container_width=True):
-        # Opcional: limpiar resultados si quieres
-        # del st.session_state.resultados
         st.query_params["page"] = "simulacion"
         st.rerun()
 

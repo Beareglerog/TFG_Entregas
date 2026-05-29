@@ -31,6 +31,7 @@ def load_all_tables():
     tables['pesos tarifa electrica verano'] = pd.read_excel(DATA_DIR / 'pesos tarifa electrica verano.xlsx', thousands='.', decimal=',')
     tables['alquiler equipos'] = pd.read_excel(DATA_DIR / 'alquiler equipos.xlsx', thousands='.', decimal=',')
     tables['Sur'] = pd.read_excel(DATA_DIR / 'Sur.xlsx', thousands='.', decimal=',')
+    tables['Norte'] = pd.read_excel(DATA_DIR / 'Norte.xlsx', thousands='.', decimal=',')
     tables['Canarias'] = pd.read_excel(DATA_DIR / 'Canarias.xlsx', thousands='.', decimal=',')
 
     for name in tables:
