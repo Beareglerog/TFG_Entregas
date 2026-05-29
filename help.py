@@ -32,6 +32,7 @@ def load_all_tables():
     tables['alquiler equipos'] = pd.read_excel(DATA_DIR / 'alquiler equipos.xlsx', thousands='.', decimal=',')
     tables['Sur'] = pd.read_excel(DATA_DIR / 'Sur.xlsx', thousands='.', decimal=',')
     tables['Norte'] = pd.read_excel(DATA_DIR / 'Norte.xlsx', thousands='.', decimal=',')
+
     tables['Canarias'] = pd.read_excel(DATA_DIR / 'Canarias.xlsx', thousands='.', decimal=',')
 
     for name in tables:
@@ -73,11 +74,15 @@ def lookup_value(table_name, fila, columna):
             f"Lookup fuera de rango en '{table_name}': fila={fila}, columna={columna}"
         )
 
-    # Auto-convert numeric strings (handles both "0,27" and "0.27")
     if isinstance(val, str):
         try:
-            return float(val.replace(",", "."))
+            return float(val.replace(",", ".").strip())
         except (ValueError, TypeError):
-            return val  # keep as string if not numeric (e.g. "A3", "punta")
+            return val
+        
+    if pd.isna(val):
+        return 0
     
+    if isinstance(val, (int, float)):
+        return float(val)
     return val

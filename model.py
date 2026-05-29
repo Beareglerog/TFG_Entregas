@@ -162,9 +162,9 @@ def impuesto_gas(suministro):
 
 def impuesto_electricidad(tipo):
     if (tipo == 'electricidad (radiadores)') or (tipo == 'electricidad (acumuladores)') or (tipo == 'bomba de calor'):
-        impuesto_electricidad = float(str(lookup_value('impuestos', 2, 'impuesto')).replace(",", ".")) / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
+        impuesto_electricidad = lookup_value('impuestos', 2, 'impuesto') / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
     elif tipo == 'electricidad':
-        impuesto_electricidad = float(str(lookup_value('impuestos', 2, 'impuesto')).replace(",", ".")) / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
+        impuesto_electricidad = lookup_value('impuestos', 2, 'impuesto') / 100  # porcentaje sobre gasto variable; en gastos de luz se pondrá el porcentaje sobre gasto fijo
     else:
         impuesto_electricidad = 0
     return impuesto_electricidad
@@ -299,18 +299,18 @@ def tarifa_suministro(inst_termica, tipo_instalacion, consumo_gn, termino,
     # --- Eléctrico ---
     # que es lo de fijo y variable y punta y valle?????????????
     if termino == "fijo":
-        fijo_punta = float(str(lookup_value("pvpc", 1, "fijo")).replace(",", "."))
-        fijo_valle = float(str(lookup_value("pvpc", 2, "fijo")).replace(",", "."))
+        fijo_punta = lookup_value("pvpc", 1, "fijo")
+        fijo_valle = lookup_value("pvpc", 2, "fijo")
         return (fijo_punta * potencia_punta + fijo_valle * potencia_valle) / potencia_punta
 
-    variable_punta = float(str(lookup_value("pvpc", 1, "variable")).replace(",", "."))
-    variable_valle = float(str(lookup_value("pvpc", 2, "variable")).replace(",", "."))
-    variable_llano = float(str(lookup_value("pvpc", 3, "variable")).replace(",", "."))
+    variable_punta = lookup_value("pvpc", 1, "variable")
+    variable_valle = lookup_value("pvpc", 2, "variable")
+    variable_llano = lookup_value("pvpc", 3, "variable")
 
     fila_pesos = lookup_row("pesos tarifa electrica", 1, zona_invierno)
-    peso_punta = float(str(lookup_value("pesos tarifa electrica", fila_pesos, "peso_punta")).replace(",", "."))
-    peso_valle = float(str(lookup_value("pesos tarifa electrica", fila_pesos, "peso_valle")).replace(",", "."))
-    peso_llano = float(str(lookup_value("pesos tarifa electrica", fila_pesos, "peso_llano")).replace(",", "."))
+    peso_punta = lookup_value("pesos tarifa electrica", fila_pesos, "peso_punta")
+    peso_valle = lookup_value("pesos tarifa electrica", fila_pesos, "peso_valle")
+    peso_llano = lookup_value("pesos tarifa electrica", fila_pesos, "peso_llano")
 
     if tipo_instalacion == "electricidad (acumuladores)":
         return variable_valle
@@ -322,35 +322,35 @@ def tarifa_suministro(inst_termica, tipo_instalacion, consumo_gn, termino,
             + variable_valle * peso_valle)
 
 def tarifa_suministroref(zona_verano): 
-    variable_punta = float(str(lookup_value('pvpc', 2, 'variable')).replace(",", ".")) 
-    variable_valle = float(str(lookup_value('pvpc', 3, 'variable')).replace(",", ".")) 
-    variable_llano = float(str(lookup_value('pvpc', 4, 'variable')).replace(",", ".")) 
+    variable_punta = lookup_value('pvpc', 2, 'variable')
+    variable_valle = lookup_value('pvpc', 3, 'variable')
+    variable_llano = lookup_value('pvpc', 4, 'variable')
     if zona_verano == '1': 
         tarifa_suministroref = 0 
     else: 
         #fila_pesos = lookup_row('pesos tarifa electrica verano', 1, zona_verano) 
         fila_pesos = lookup_row('pesos tarifa electrica verano', 0, zona_verano) 
-        peso_punta = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_punta')).replace(",", "."))
-        peso_valle = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_valle')).replace(",", ".")) 
-        peso_llano = float(str(lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_llano')).replace(",", ".")) 
+        peso_punta = lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_punta')
+        peso_valle = lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_valle')
+        peso_llano = lookup_value('pesos tarifa electrica verano', fila_pesos, 'peso_llano')
         tarifa_suministroref = variable_punta*peso_punta + variable_llano*peso_llano + variable_valle*peso_valle 
     return tarifa_suministroref
 
 def tarifa_electrica(termino, potencia_punta, potencia_valle): 
     if termino == 'fijo': 
-        fijo_punta = float(str(lookup_value('pvpc', 2, 'fijo')))
-        fijo_valle = float(str(lookup_value('pvpc', 3, 'fijo')).replace(",", ".")) 
+        fijo_punta = lookup_value('pvpc', 2, 'fijo')
+        fijo_valle = lookup_value('pvpc', 3, 'fijo')
         tarifa_electrica = (fijo_punta*potencia_punta + fijo_valle*potencia_valle)/potencia_punta 
     else: 
-        variable_punta = float(str(lookup_value('pvpc', 2, 'variable')).replace(",", ".")) 
-        variable_valle = float(str(lookup_value('pvpc', 3, 'variable')).replace(",", ".")) 
-        variable_llano = float(str(lookup_value('pvpc', 4, 'variable')).replace(",", ".")) 
+        variable_punta = lookup_value('pvpc', 2, 'variable')
+        variable_valle = lookup_value('pvpc', 3, 'variable')
+        variable_llano = lookup_value('pvpc', 4, 'variable')
         fila_pesos = lookup_row('pesos tarifa electrica', 0, 'usos domesticos')
-        peso_punta = float(str(lookup_value('pesos tarifa electrica', fila_pesos, 'peso_punta')).replace(",", ".")) 
-        peso_valle = float(str(lookup_value('pesos tarifa electrica', fila_pesos, 'peso_valle')).replace(",", ".")) 
-        peso_llano = float(str(lookup_value('pesos tarifa electrica', fila_pesos, 'peso_llano')).replace(",", ".")) 
-        tarifa_electrica = variable_punta*peso_punta + variable_llano*peso_llano + variable_valle*peso_valle 
-      
+        peso_punta = lookup_value('pesos tarifa electrica', fila_pesos, 'peso_punta')
+        peso_valle = lookup_value('pesos tarifa electrica', fila_pesos, 'peso_valle')
+        peso_llano = lookup_value('pesos tarifa electrica', fila_pesos, 'peso_llano')
+        tarifa_electrica = variable_punta*peso_punta + variable_llano*peso_llano + variable_valle*peso_valle
+
     return tarifa_electrica
 
 def consumo_gas(tipo_calefaccion, tipo_acs, consumo_calefaccion, consumo_acs, inst_calefaccion, inst_ACS, llamada): 
@@ -389,7 +389,7 @@ def fdemanda_corregidacal(demanda_CorregidaSigno):
 
 def io_is(zona_invierno, tipo_vivienda, C1):
     row = lookup_row('Dispersion R', 'Zona', zona_invierno)
-    R = float(str(lookup_value('Dispersion R', row, tipo_vivienda)).replace(",", "."))
+    R = lookup_value('Dispersion R', row, tipo_vivienda)
     C1 = float(str(C1).replace(",", "."))
     io_is = (1 + (C1 - 0.6) * 2 * (R - 1)) / R
     return io_is
@@ -505,10 +505,10 @@ def gesin(nombre_aparato, miembros):
         val_pen = lookup_value('Penetracion', row_pen, 2)
         val_pen_float = float(str(val_pen).replace(",", "."))
         gesin = val_cme_float / val_pen_float
-        gesin = float(str(lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col)).replace(",", ".")) / float(str(lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)).replace(",", "."))
+        gesin = lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col) / lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)
     
     else:
-        gesin = float(str(lookup_value('CMESin', lookup_row('CMESin', 0, nombre_aparato), Col)).replace(",", "."))
+        gesin = lookup_value('CMESin', lookup_row('CMESin', 0, nombre_aparato), Col)
         row_cme = lookup_row('CMESin', 0, nombre_aparato)
         val = lookup_value('CMESin', row_cme, Col)
         gesin = float(str(val).replace(",", "."))
@@ -519,9 +519,9 @@ def gecon(nombre_aparato, miembros):
     Col = columna(miembros)
     if nombre_aparato == 'Tablet':
         #Lo que lee del df es un string -> hay que convertirlo a numero
-        gecon = float(str(lookup_value('CMESin', lookup_row('CMESin', 0, nombre_aparato), Col)).replace(",", ".")) * float(str(lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)).replace(",", "."))
+        gecon = lookup_value('CMESin', lookup_row('CMESin', 0, nombre_aparato), Col) * lookup_value('Penetracion', lookup_row('Penetracion', 0, nombre_aparato), 2)
     else:
-        gecon = float(str(lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col)).replace(",", "."))
+        gecon = lookup_value('CMECon', lookup_row('CMECon', 0, nombre_aparato), Col)
     return gecon
 
 def gei(provincia, Npax, superficie):
@@ -536,7 +536,7 @@ def gei(provincia, Npax, superficie):
         catalogar_sup = 3
     else:
         catalogar_sup = 4
-    gei = float(str(lookup_value(zona_ilu,miembros,catalogar_sup)).replace(",", "."))
+    gei = lookup_value(zona_ilu,miembros,catalogar_sup)
     
     return gei
 
