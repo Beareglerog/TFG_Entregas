@@ -299,15 +299,15 @@ def tarifa_suministro(inst_termica, tipo_instalacion, consumo_gn, termino,
     # --- Eléctrico ---
     # que es lo de fijo y variable y punta y valle?????????????
     if termino == "fijo":
-        fijo_punta = lookup_value("pvpc", 1, "fijo")
-        fijo_valle = lookup_value("pvpc", 2, "fijo")
+        fijo_punta = lookup_value("pvpc", 2, "fijo")
+        fijo_valle = lookup_value("pvpc", 3, "fijo")
         return (fijo_punta * potencia_punta + fijo_valle * potencia_valle) / potencia_punta
 
-    variable_punta = lookup_value("pvpc", 1, "variable")
-    variable_valle = lookup_value("pvpc", 2, "variable")
-    variable_llano = lookup_value("pvpc", 3, "variable")
+    variable_punta = lookup_value("pvpc", 2, "variable")
+    variable_valle = lookup_value("pvpc", 3, "variable")
+    variable_llano = lookup_value("pvpc", 4, "variable")
 
-    fila_pesos = lookup_row("pesos tarifa electrica", 1, zona_invierno)
+    fila_pesos = lookup_row("pesos tarifa electrica", "Zona invierno", zona_invierno)
     peso_punta = lookup_value("pesos tarifa electrica", fila_pesos, "peso_punta")
     peso_valle = lookup_value("pesos tarifa electrica", fila_pesos, "peso_valle")
     peso_llano = lookup_value("pesos tarifa electrica", fila_pesos, "peso_llano")
@@ -316,6 +316,7 @@ def tarifa_suministro(inst_termica, tipo_instalacion, consumo_gn, termino,
         return variable_valle
     if tipo_instalacion == "electricidad":
         return variable_llano
+
 
     return (variable_punta * peso_punta
             + variable_llano * peso_llano
